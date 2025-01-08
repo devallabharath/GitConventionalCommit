@@ -9,9 +9,21 @@ import SwiftUI
 
 @main
 struct GitConventionalCommitApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
+  @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+  var body: some Scene {
+    WindowGroup {
+      MainView()
+        .onAppear {
+          if let win = NSApp.windows.first {
+            // win.makeMain()
+            // win.makeKeyAndOrderFront(nil)
+            win.center()
+            win.standardWindowButton(.closeButton)?.isEnabled = false
+            // win.standardWindowButton(.miniaturizeButton)?.isHidden = true
+            // win.standardWindowButton(.zoomButton)?.isHidden = true
+          }
         }
     }
+  }
 }
