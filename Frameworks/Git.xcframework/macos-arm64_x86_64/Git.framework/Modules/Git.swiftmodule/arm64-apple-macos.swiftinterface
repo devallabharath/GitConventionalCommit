@@ -1,0 +1,1011 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-module-flags: -target arm64-apple-macos10.13 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name Git
+import Darwin.C
+import Darwin
+import Foundation
+@_exported import Git
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+@_hasMissingDesignatedInitializers open class GitFile<T> : Git.File<T> where T : Git.FileCoder {
+  @objc deinit
+}
+public class GitStatusOptions {
+  public static var `default`: Git.GitStatusOptions
+  public init()
+  @objc deinit
+}
+public protocol RepositoryReferenceName {
+  var fullName: Swift.String { get }
+  var shortName: Swift.String { get }
+  var localName: Swift.String { get }
+  var remoteName: Swift.String { get }
+  var lastName: Swift.String { get }
+}
+public func == (lhs: any Git.RepositoryReferenceName, rhs: any Git.RepositoryReferenceName) -> Swift.Bool
+public func != (lhs: any Git.RepositoryReferenceName, rhs: any Git.RepositoryReferenceName) -> Swift.Bool
+public struct IndexIterator<T> : Swift.IteratorProtocol {
+  public mutating func next() -> T?
+  public typealias Element = T
+}
+public class GitCheckoutOptions {
+  public init()
+  public init(files: [Swift.String])
+  public var files: [Swift.String]
+  public var checkoutAllFiles: Swift.Bool
+  @objc deinit
+}
+public protocol RepositoryLogRecord {
+  var hash: Swift.String { get }
+  var shortHash: Swift.String { get }
+  var authorName: Swift.String { get }
+  var authorEmail: Swift.String { get }
+  var parentHashes: Swift.String { get }
+  var subject: Swift.String { get }
+  var body: Swift.String { get }
+  var commiterDate: Foundation.Date { get }
+  var refNames: Swift.String { get }
+}
+open class GitCredentialsProvider : Git.CredentialsProvider {
+  public static var anonymousProvider: any Git.CredentialsProvider {
+    get
+  }
+  required public init(username: Swift.String, password: Swift.String?)
+  public var username: Swift.String {
+    get
+  }
+  public var password: Swift.String? {
+    get
+  }
+  public func urlByAddingCredentials(to sourceURL: Foundation.URL) throws -> Foundation.URL
+  public var escapedPassword: Swift.String? {
+    get
+  }
+  @objc deinit
+}
+public enum SpawnError : Swift.Error {
+  case canNotOpenPipe(text: Swift.String, code: Swift.Int32)
+  case canNotCreatePosixSpawn
+}
+extension Git.SpawnError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+public typealias OutputClosure = (Swift.String) -> Swift.Void
+public typealias OutputCompletionClosure = () -> Swift.Void
+extension Git.GitRepository {
+  public func merge(options: Git.GitMergeOptions) throws
+  public func mergeAbort() throws
+  public func mergeCheckStatus() throws -> Git.GitMergeStatus
+}
+@_hasMissingDesignatedInitializers public class GitStashApplyOptions {
+  public static var `default`: Git.GitStashApplyOptions {
+    get
+  }
+  public init(stash: (any Git.RepositoryStashRecord)? = nil)
+  public var stash: (any Git.RepositoryStashRecord)? {
+    get
+  }
+  public enum DropOptions {
+    case keep
+    case drop
+    public static func == (a: Git.GitStashApplyOptions.DropOptions, b: Git.GitStashApplyOptions.DropOptions) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public var dropStrategy: Git.GitStashApplyOptions.DropOptions
+  @objc deinit
+}
+public class GitReferenceList {
+  required public init(_ references: [any Git.RepositoryReference])
+  public var currentReference: (any Git.RepositoryReference)? {
+    get
+  }
+  public var localBranches: [any Git.RepositoryReference] {
+    get
+  }
+  public var remoteBranches: [any Git.RepositoryReference] {
+    get
+  }
+  public var masterBranch: (any Git.RepositoryReference)? {
+    get
+  }
+  public var tags: [any Git.RepositoryReference] {
+    get
+  }
+  public var references: [any Git.RepositoryReference] {
+    get
+  }
+  @objc deinit
+}
+extension Git.GitReferenceList : Swift.Sequence {
+  public func makeIterator() -> Git.IndexIterator<any Git.RepositoryReference>
+  public typealias Element = any Git.RepositoryReference
+  public typealias Iterator = Git.IndexIterator<any Git.RepositoryReference>
+}
+public class GitStashRecordList {
+  required public init(_ records: [any Git.RepositoryStashRecord] = [])
+  public var records: [any Git.RepositoryStashRecord] {
+    get
+  }
+  @objc deinit
+}
+public class GitPullOptions {
+  public static var `default`: Git.GitPullOptions {
+    get
+  }
+  public init()
+  public var autoCommit: Swift.Bool
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class GitMergeStatus {
+  public var isMergeInProgress: Swift.Bool {
+    get
+  }
+  public var isSquashInProgress: Swift.Bool {
+    get
+  }
+  @objc deinit
+}
+public struct GitSparseAddOptions {
+  public var filePaths: [Swift.String]
+  public init(filePaths: [Swift.String])
+}
+public class GitCommitOptions {
+  public init(message: Swift.String)
+  public init(message: Swift.String, files: Git.GitCommitOptions.FileOptions)
+  public enum FileOptions {
+    case staged
+    case all
+    public static func == (a: Git.GitCommitOptions.FileOptions, b: Git.GitCommitOptions.FileOptions) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public var message: Swift.String
+  public var files: Git.GitCommitOptions.FileOptions
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class GitCherryResult {
+  public var revisions: [Git.GitCherryRevision] {
+    get
+  }
+  public func revisions(of revisionType: Git.GitCherryRevision.RevisionType) -> [Git.GitCherryRevision]
+  @objc deinit
+}
+public class GitCherryRevision {
+  required public init(hash: Swift.String, type: Git.GitCherryRevision.RevisionType)
+  public var hash: Swift.String {
+    get
+  }
+  public var type: Git.GitCherryRevision.RevisionType {
+    get
+  }
+  public enum RevisionType {
+    case merged
+    case unmerged
+    public static func == (a: Git.GitCherryRevision.RevisionType, b: Git.GitCherryRevision.RevisionType) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  @objc deinit
+}
+public protocol RepositoryStashRecord : Git.RepositoryLogRecord {
+  var stackIndex: Swift.Int { get }
+}
+extension Git.GitRepository {
+  public func cherry(options: Git.GitCherryOptions) throws -> Git.GitCherryResult
+}
+@dynamicMemberLookup open class FileCoder {
+  required public init(file: any Git.Accessible)
+  public subscript<T>(dynamicMember key: Swift.String) -> T? {
+    get
+  }
+  open func encode() throws -> Foundation.Data
+  open func decode() throws
+  open func value<T>(for key: Swift.String) -> T?
+  public var content: Foundation.Data {
+    get
+  }
+  weak public var file: (any Git.Accessible)! {
+    get
+  }
+  @objc deinit
+}
+public struct GitSparseSetOptions {
+  public var filePaths: [Swift.String]
+  public init(filePaths: [Swift.String])
+  public var noCone: Swift.Bool
+}
+@_hasMissingDesignatedInitializers public class GitLogCompareOptions {
+  public static var `default`: Git.GitLogCompareOptions {
+    get
+  }
+  public init(lhsReference: Git.GitLogCompareOptions.Reference, rhsReference: Git.GitLogCompareOptions.Reference)
+  public var lhsReference: Git.GitLogCompareOptions.Reference?
+  public var rhsReference: Git.GitLogCompareOptions.Reference?
+  public var fetchStrategy: Git.GitLogCompareOptions.FetchStrategy
+  @objc deinit
+}
+extension Git.GitLogCompareOptions {
+  public enum ComparisonDirection {
+    case local
+    case remote(remote: any Git.RepositoryRemote)
+  }
+  public enum FetchStrategy {
+    case fetchRemotesBeforeComparison(force: Swift.Bool)
+    case ignore
+  }
+  public class Reference {
+    required public init(referenceName: Swift.String, direction: Git.GitLogCompareOptions.ComparisonDirection)
+    public var name: Swift.String {
+      get
+    }
+    public var direction: Git.GitLogCompareOptions.ComparisonDirection {
+      get
+    }
+    @objc deinit
+  }
+}
+extension Git.GitLogCompareOptions {
+  public static func pending(for repository: Git.GitRepository, in remote: any Git.RepositoryRemote) throws -> Git.GitLogCompareOptions
+  public static func incoming(for repository: Git.GitRepository, in remote: any Git.RepositoryRemote) throws -> Git.GitLogCompareOptions
+}
+public class GitBranchOptions {
+  public static var `default`: Git.GitBranchOptions {
+    get
+  }
+  public init()
+  public var fromReferenceName: Swift.String?
+  @objc deinit
+}
+extension Git.GitRepository {
+  public func listStatus(options: Git.GitStatusOptions = .default) throws -> Git.GitFileStatusList
+}
+@_hasMissingDesignatedInitializers public class GitRemoteList {
+  public var remotes: [any Git.RepositoryRemote] {
+    get
+  }
+  public var origin: (any Git.RepositoryRemote)? {
+    get
+  }
+  @objc deinit
+}
+extension Git.GitRemoteList : Swift.Sequence {
+  public func makeIterator() -> Git.IndexIterator<any Git.RepositoryRemote>
+  public typealias Element = any Git.RepositoryRemote
+  public typealias Iterator = Git.IndexIterator<any Git.RepositoryRemote>
+}
+public class GitAddOptions {
+  public static var `default`: Git.GitAddOptions
+  public init()
+  public var force: Swift.Bool
+  public var ignoreErrors: Swift.Bool
+  public var update: Swift.Bool
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class GitTagRecord : Git.RepositoryTagRecord {
+  final public var tag: Swift.String
+  @objc deinit
+}
+public class GitLogOptions {
+  public static var `default`: Git.GitLogOptions {
+    get
+  }
+  public init()
+  public var limit: Swift.UInt?
+  public var author: Swift.String?
+  public var after: Foundation.Date?
+  public var before: Foundation.Date?
+  public var reference: Git.GitLogOptions.Reference?
+  public var noMerges: Swift.Bool
+  @objc deinit
+}
+extension Git.GitLogOptions {
+  public struct Reference {
+    public init(name: Swift.String)
+    public init(name: Swift.String, remote: any Git.RepositoryRemote)
+    public var name: Swift.String
+    public var remote: (any Git.RepositoryRemote)?
+  }
+}
+public class GitResetOptions {
+  public init()
+  public var mode: Git.GitResetOptions.Mode?
+  public var commit: Swift.String?
+  @objc deinit
+}
+extension Git.GitResetOptions {
+  public enum Mode {
+    case soft
+    case mixed
+    case hard
+    case merge
+    case keep
+    public static func == (a: Git.GitResetOptions.Mode, b: Git.GitResetOptions.Mode) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public class GitPushOptions {
+  public static var `default`: Git.GitPushOptions {
+    get
+  }
+  public init()
+  public enum BranchOptions {
+    case all
+    case single(name: Swift.String, remote: any Git.RepositoryRemote)
+    case tags
+  }
+  public var branches: Git.GitPushOptions.BranchOptions
+  public var upstream: Swift.Bool
+  public var parameters: [Swift.String]
+  @objc deinit
+}
+public class GitMergeOptions {
+  required public init(reference: Git.GitMergeOptions.Reference)
+  public var reference: Git.GitMergeOptions.Reference
+  public var shouldCommit: Swift.Bool {
+    get
+    set
+  }
+  public var squashCommits: Swift.Bool {
+    get
+    set
+  }
+  public var fastForward: Git.GitMergeOptions.FastForwardOptions
+  @objc deinit
+}
+extension Git.GitMergeOptions {
+  public class Reference {
+    public init(name: Swift.String)
+    public var name: Swift.String {
+      get
+    }
+    @objc deinit
+  }
+  public enum FastForwardOptions {
+    case fastForwardWhenPossible
+    case noFastForward
+    case fastForwardOnly
+    public static func == (a: Git.GitMergeOptions.FastForwardOptions, b: Git.GitMergeOptions.FastForwardOptions) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public protocol RepositoryTagRecord {
+  var tag: Swift.String { get }
+}
+extension Git.GitRepository {
+  public func tag(options: Git.GitTagOptions) throws
+  public func listTags(options: Git.GitTagListOptions = .default) throws -> Git.GitTagRecordList
+}
+public class GitFetchOptions {
+  public static var `default`: Git.GitFetchOptions {
+    get
+  }
+  public init()
+  public enum RemoteOptions {
+    case all
+    public static func == (a: Git.GitFetchOptions.RemoteOptions, b: Git.GitFetchOptions.RemoteOptions) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public enum TagOptions {
+    case all
+    case none
+    public static func == (a: Git.GitFetchOptions.TagOptions, b: Git.GitFetchOptions.TagOptions) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public var force: Swift.Bool
+  public var remotes: Git.GitFetchOptions.RemoteOptions
+  public var tags: Git.GitFetchOptions.TagOptions
+  @objc deinit
+}
+extension Git.GitRepository {
+  public func listRemotes() throws -> Git.GitRemoteList
+  @discardableResult
+  public func addRemote(name: Swift.String, url: Foundation.URL) throws -> any Git.RepositoryRemote
+}
+public class GitCloneOptions {
+  public static var `default`: Git.GitCloneOptions {
+    get
+  }
+  public init()
+  public var quiet: Swift.Bool
+  public var progress: Swift.Bool
+  public var branches: Git.GitCloneOptions.BranchOptions
+  public var depth: Git.GitCloneOptions.DepthOptions
+  public var checkout: Git.GitCloneOptions.CheckoutOptions
+  public var sparse: Git.GitCloneOptions.SparseOptions
+  public var tags: Git.GitCloneOptions.TagsOptions
+  public var filter: Git.GitCloneOptions.FilterOptions
+  @objc deinit
+}
+extension Git.GitCloneOptions {
+  public enum CheckoutOptions {
+    case checkout
+    case noCheckout
+    public static func == (a: Git.GitCloneOptions.CheckoutOptions, b: Git.GitCloneOptions.CheckoutOptions) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+extension Git.GitCloneOptions {
+  public enum DepthOptions {
+    case head
+    case limited(numberOfRevisions: Swift.UInt)
+    case unlimited
+  }
+}
+extension Git.GitCloneOptions {
+  public enum BranchOptions {
+    case all
+    case head
+    case master
+    case single(named: Swift.String)
+  }
+}
+extension Git.GitCloneOptions {
+  public enum TagsOptions {
+    case fetch
+    case noTags
+    public static func == (a: Git.GitCloneOptions.TagsOptions, b: Git.GitCloneOptions.TagsOptions) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+extension Git.GitCloneOptions {
+  public enum SparseOptions {
+    case sparse
+    case noSparse
+    public static func == (a: Git.GitCloneOptions.SparseOptions, b: Git.GitCloneOptions.SparseOptions) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+extension Git.GitCloneOptions {
+  public enum FilterOptions {
+    case noFilter
+    case omitAllBlobs
+    case omitBlobsLargerThanSize(Swift.Int)
+    case custom(Swift.String)
+  }
+}
+public class GitStashOptions {
+  public static var `default`: Git.GitStashOptions {
+    get
+  }
+  public init(message: Swift.String? = nil)
+  public var keepIndex: Swift.Bool
+  public var includeUntracked: Swift.Bool
+  public var stashAll: Swift.Bool
+  public var message: Swift.String?
+  @objc deinit
+}
+public protocol RepositoryRemote {
+  var name: Swift.String { get }
+  var url: Foundation.URL { get }
+  mutating func rename(to name: Swift.String) throws
+  mutating func changeURL(to newUrl: Foundation.URL) throws
+}
+public protocol RepositoryReference {
+  var id: Swift.String { get }
+  var active: Swift.Bool { get }
+  var parentId: Swift.String? { get }
+  var path: Swift.String { get }
+  var name: any Git.RepositoryReferenceName { get }
+  var author: Swift.String { get }
+  var date: Foundation.Date { get }
+  var message: Swift.String? { get }
+}
+@_hasMissingDesignatedInitializers public class GitFileStatus {
+  public var path: Swift.String {
+    get
+  }
+  public var state: Git.GitFileStatus.State {
+    get
+  }
+  public var hasConflicts: Swift.Bool {
+    get
+  }
+  public var hasChangesInIndex: Swift.Bool {
+    get
+  }
+  public var hasChangesInWorktree: Swift.Bool {
+    get
+  }
+  @objc deinit
+}
+extension Git.GitFileStatus {
+  public class State {
+    required public init(index: Git.GitFileStatus.ModificationState, worktree: Git.GitFileStatus.ModificationState)
+    public var index: Git.GitFileStatus.ModificationState
+    public var worktree: Git.GitFileStatus.ModificationState
+    public var conflict: Git.GitFileStatus.ConflictState? {
+      get
+    }
+    @objc deinit
+  }
+  public enum ModificationState : Swift.String {
+    case modified
+    case added
+    case deleted
+    case renamed
+    case copied
+    case untracked
+    case ignored
+    case unmerged
+    case unmodified
+    case unknown
+    public init?(rawValue: Swift.String)
+    public typealias RawValue = Swift.String
+    public var rawValue: Swift.String {
+      get
+    }
+  }
+  public enum ConflictState {
+    case unmergedAddedBoth
+    case unmergedAddedByUs
+    case unmergedAddedByThem
+    case unmergedDeletedBoth
+    case unmergedDeletedByUs
+    case unmergedDeletedByThem
+    case unmergedModifiedBoth
+    public static func == (a: Git.GitFileStatus.ConflictState, b: Git.GitFileStatus.ConflictState) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+@_hasMissingDesignatedInitializers open class FileAnnotationRecord {
+  public var author: Swift.String!
+  public var line: Swift.UInt!
+  public var id: Swift.String!
+  @objc deinit
+}
+public class GitCherryOptions {
+  public init(reference: Git.GitLogOptions.Reference)
+  public var lhsReference: Git.GitLogOptions.Reference
+  public var rhsReference: Git.GitLogOptions.Reference
+  @objc deinit
+}
+public enum CredentialsProviderError : Swift.Error {
+  case repositoryURLSchemeMissing
+  case repositoryURLMalformed
+  public static func == (a: Git.CredentialsProviderError, b: Git.CredentialsProviderError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol CredentialsProvider {
+  static var anonymousProvider: any Git.CredentialsProvider { get }
+  var username: Swift.String { get }
+  var password: Swift.String? { get }
+  var escapedPassword: Swift.String? { get }
+  func urlByAddingCredentials(to sourceURL: Foundation.URL) throws -> Foundation.URL
+}
+public class GitLogRecordList {
+  required public init(_ records: [any Git.RepositoryLogRecord] = [])
+  public var records: [any Git.RepositoryLogRecord] {
+    get
+  }
+  @objc deinit
+}
+public struct GitTagListOptions {
+  public static var `default`: Git.GitTagListOptions
+  public static func pattern(_ pattern: Swift.String) -> Git.GitTagListOptions
+  public init(pattern: Swift.String? = nil)
+  public let pattern: Swift.String?
+}
+public enum FileStorageError : Swift.Error {
+  case unableToReadFile(atPath: Swift.String)
+  case unableToWriteFile(atPath: Swift.String)
+}
+public protocol Accessible : AnyObject {
+  var path: Swift.String { get }
+  var content: Foundation.Data { get }
+  var options: Git.FileOptions { get }
+  var annotations: [Git.FileAnnotationRecord] { get }
+}
+public protocol FileStorage : AnyObject {
+  func read(contentOf file: any Git.Accessible) throws -> Foundation.Data
+  func read<T>(annotationsOf file: any Git.Accessible) -> [T] where T : Git.FileAnnotationRecord
+  func write(file: any Git.Accessible) throws
+}
+public struct FileOptions {
+  public static var `default`: Git.FileOptions
+  public var annotations: Swift.Bool
+}
+open class File<T> : Git.Accessible where T : Git.FileCoder {
+  public init(relativePath path: Swift.String, in storage: any Git.FileStorage, options: Git.FileOptions = .default)
+  public func read(options: Git.FileOptions = .default) throws
+  public func save() throws
+  public func beginUpdates()
+  public func endUpdates() throws
+  public var annotations: [Git.FileAnnotationRecord] {
+    get
+  }
+  public var coder: T! {
+    get
+  }
+  public var options: Git.FileOptions {
+    get
+  }
+  public var content: Foundation.Data {
+    get
+  }
+  public var path: Swift.String {
+    get
+  }
+  @objc deinit
+}
+extension Git.GitRepository {
+  public func add(files: [Swift.String], options: Git.GitAddOptions = .default) throws
+  public func addWithStatusCheck(files: [Swift.String], options: Git.GitAddOptions = .default) throws -> Git.GitFileStatusList
+  public func reset(files: [Swift.String]) throws
+  public func resetWithStatusCheck(files: [Swift.String]) throws -> Git.GitFileStatusList
+  public func discardChanges(in files: [Swift.String]) throws
+  public func discardAllLocalChanges() throws
+}
+extension Git.GitRepository {
+  public enum FileError : Swift.Error {
+    case unableToAddFiles(message: Swift.String)
+    case unableToReset(message: Swift.String)
+  }
+}
+extension Git.GitRepository.FileError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+@_inheritsConvenienceInitializers public class GitStashRecord : Git.GitLogRecord, Git.RepositoryStashRecord {
+  public var stackIndex: Swift.Int {
+    get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+  @objc deinit
+}
+public protocol Repository : AnyObject {
+  var remoteUrl: Foundation.URL? { get }
+  var localPath: Swift.String? { get }
+  var delegate: (any Git.RepositoryDelegate)? { get set }
+  var credentialsProvider: any Git.CredentialsProvider { get }
+  init(fromUrl remoteUrl: Foundation.URL, using credentials: any Git.CredentialsProvider)
+  init(atPath path: Swift.String, using credentialsProvider: any Git.CredentialsProvider) throws
+  func add(files: [Swift.String], options: Git.GitAddOptions) throws
+  func addWithStatusCheck(files: [Swift.String], options: Git.GitAddOptions) throws -> Git.GitFileStatusList
+  func reset(files: [Swift.String]) throws
+  func resetWithStatusCheck(files: [Swift.String]) throws -> Git.GitFileStatusList
+  func discardChanges(in files: [Swift.String]) throws
+  func discardAllLocalChanges() throws
+  func clone(atPath path: Swift.String, options: Git.GitCloneOptions) throws
+  func cloneAtTemporaryPath(options: Git.GitCloneOptions) throws
+  @discardableResult
+  func createBranch(branchName: Swift.String, options: Git.GitBranchOptions) throws -> any Git.RepositoryReference
+  func listLogRecords(options: Git.GitLogOptions) throws -> Git.GitLogRecordList
+  func listStashRecords() throws -> Git.GitStashRecordList
+  func retrieveLogRecordsComparison(options: Git.GitLogCompareOptions) throws -> Git.GitLogRecordList
+  func listReferences() throws -> Git.GitReferenceList
+  func listTags(options: Git.GitTagListOptions) throws -> Git.GitTagRecordList
+  func listRemotes() throws -> Git.GitRemoteList
+  @discardableResult
+  func addRemote(name: Swift.String, url: Foundation.URL) throws -> any Git.RepositoryRemote
+  func listStatus(options: Git.GitStatusOptions) throws -> Git.GitFileStatusList
+  func fetchRemotes(options: Git.GitFetchOptions) throws
+  func checkout(reference: any Git.RepositoryReference) throws
+  func commit(options: Git.GitCommitOptions) throws
+  func pull(options: Git.GitPullOptions) throws
+  func push(options: Git.GitPushOptions) throws
+  func merge(options: Git.GitMergeOptions) throws
+  func mergeAbort() throws
+  func mergeCheckStatus() throws -> Git.GitMergeStatus
+  func cherryPick(options: Git.GitCherryPickOptions) throws
+  func cherry(options: Git.GitCherryOptions) throws -> Git.GitCherryResult
+  func stashApply(options: Git.GitStashApplyOptions) throws
+  @discardableResult
+  func stashCreate(options: Git.GitStashOptions) throws -> (any Git.RepositoryStashRecord)?
+  func stashDrop(record: (any Git.RepositoryStashRecord)?) throws
+  func sparseCheckoutAdd(files: [Swift.String]) throws
+  func sparseCheckoutSet(files: [Swift.String]) throws
+  func sparseCheckoutSet(options: Git.GitSparseSetOptions) throws
+  func cancel()
+}
+public class GitFileStorage : Git.FileStorage {
+  public init(repository: Git.GitRepository)
+  public func read(contentOf file: any Git.Accessible) throws -> Foundation.Data
+  public func read<T>(annotationsOf file: any Git.Accessible) -> [T] where T : Git.FileAnnotationRecord
+  public func write(file: any Git.Accessible) throws
+  @objc deinit
+}
+extension Git.GitRepository {
+  @discardableResult
+  public func createBranch(branchName: Swift.String, options: Git.GitBranchOptions) throws -> any Git.RepositoryReference
+}
+extension Git.GitRepository {
+  public func sparseCheckoutAdd(files: [Swift.String]) throws
+  public func sparseCheckoutSet(files: [Swift.String]) throws
+  public func sparseCheckoutSet(options: Git.GitSparseSetOptions) throws
+}
+extension Git.GitRepository {
+  public enum SparseCheckoutError : Swift.Error {
+    case unableToPerformOperation(message: Swift.String)
+  }
+}
+extension Git.GitRepository.SparseCheckoutError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+extension Git.GitRepository.SparseCheckoutError : Git.GitCommonError {
+  public var rawMessage: Swift.String {
+    get
+  }
+}
+public class GitFileStatusList {
+  required public init(files: [Git.GitFileStatus] = [])
+  public func add(_ status: Git.GitFileStatus) throws
+  public func remove(_ status: Git.GitFileStatus)
+  public func replace(_ status: Git.GitFileStatus)
+  public func contains(filePath: Swift.String) -> Swift.Bool
+  public var files: [Git.GitFileStatus] {
+    get
+  }
+  @objc deinit
+}
+extension Git.GitFileStatusList {
+  public enum Exception : Swift.Error {
+    case fileStatusAlreadyExists
+    public static func == (a: Git.GitFileStatusList.Exception, b: Git.GitFileStatusList.Exception) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+extension Git.GitFileStatusList : Swift.Sequence {
+  public func makeIterator() -> Git.IndexIterator<Git.GitFileStatus>
+  public typealias Element = Git.GitFileStatus
+  public typealias Iterator = Git.IndexIterator<Git.GitFileStatus>
+}
+public protocol RepositoryDelegate : AnyObject {
+  func repository(_ repository: any Git.Repository, didProgressClone progress: Swift.String)
+  func repository(_ repository: any Git.Repository, didProgressCommit progress: Swift.String)
+  func repository(_ repository: any Git.Repository, didProgressPush progress: Swift.String)
+  func repository(_ repository: any Git.Repository, didProgressPull progress: Swift.String)
+  func repository(_ repository: any Git.Repository, didProgressFetch progress: Swift.String)
+  func repository(_ repository: any Git.Repository, willStartTaskWithArguments arguments: [Swift.String])
+  func repository(_ repository: any Git.Repository, didFinishMerge output: Swift.String?)
+}
+extension Git.RepositoryDelegate {
+  public func repository(_ repository: any Git.Repository, didProgressCommit progress: Swift.String)
+  public func repository(_ repository: any Git.Repository, didProgressClone progress: Swift.String)
+  public func repository(_ repository: any Git.Repository, didProgressFetch progress: Swift.String)
+  public func repository(_ repository: any Git.Repository, didProgressPush progress: Swift.String)
+  public func repository(_ repository: any Git.Repository, didProgressPull progress: Swift.String)
+  public func repository(_ repository: any Git.Repository, willStartTaskWithArguments arguments: [Swift.String])
+  public func repository(_ repository: any Git.Repository, didFinishMerge output: Swift.String?)
+}
+public class GitLogRecord : Git.RepositoryLogRecord, Swift.Codable {
+  public var hash: Swift.String {
+    get
+  }
+  public var shortHash: Swift.String {
+    get
+  }
+  public var authorName: Swift.String {
+    get
+  }
+  public var authorEmail: Swift.String {
+    get
+  }
+  public var subject: Swift.String {
+    get
+  }
+  public var parentHashes: Swift.String {
+    get
+  }
+  public var body: Swift.String {
+    get
+  }
+  public var commiterDate: Foundation.Date {
+    get
+  }
+  public var refNames: Swift.String {
+    get
+  }
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+@_hasMissingDesignatedInitializers public class GitRepository : Git.Repository {
+  weak public var delegate: (any Git.RepositoryDelegate)?
+  public var localPath: Swift.String? {
+    get
+  }
+  public var remoteUrl: Foundation.URL? {
+    get
+  }
+  public var credentialsProvider: any Git.CredentialsProvider {
+    get
+  }
+  public static func installExecutablePath(_ path: Swift.String)
+  required public init(fromUrl remoteUrl: Foundation.URL, using credentials: any Git.CredentialsProvider = GitCredentialsProvider.anonymousProvider)
+  required public init(atPath path: Swift.String, using credentials: any Git.CredentialsProvider = GitCredentialsProvider.anonymousProvider) throws
+  @objc deinit
+  @discardableResult
+  public func stashCreate(options: Git.GitStashOptions = GitStashOptions.default) throws -> (any Git.RepositoryStashRecord)?
+  public func commit(options: Git.GitCommitOptions) throws
+  public func clone(atPath path: Swift.String, options: Git.GitCloneOptions = GitCloneOptions.default) throws
+  public func cloneAtTemporaryPath(options: Git.GitCloneOptions = GitCloneOptions.default) throws
+  public func fetchRemotes(options: Git.GitFetchOptions = GitFetchOptions.default) throws
+  public func listStashRecords() throws -> Git.GitStashRecordList
+  public func listReferences() throws -> Git.GitReferenceList
+  public func checkout(reference: any Git.RepositoryReference) throws
+  public func pull(options: Git.GitPullOptions = GitPullOptions.default) throws
+  public func push(options: Git.GitPushOptions = GitPushOptions.default) throws
+  public func stashApply(options: Git.GitStashApplyOptions = .default) throws
+  public func stashDrop(record: (any Git.RepositoryStashRecord)?) throws
+  public func cancel()
+}
+public class GitInitOptions {
+  public static var `default`: Git.GitInitOptions {
+    get
+  }
+  public init()
+  public var initialBranchName: Swift.String?
+  public var bare: Swift.Bool
+  @objc deinit
+}
+extension Git.GitRepository {
+  public func cherryPick(options: Git.GitCherryPickOptions) throws
+}
+public class GitCherryPickOptions {
+  public init(changeset: Swift.String)
+  public var shouldCommit: Swift.Bool
+  public var changeset: Swift.String
+  public var mainline: Swift.Int?
+  @objc deinit
+}
+extension Git.GitRepository {
+  public static func create(atPath path: Swift.String, options: Git.GitInitOptions = .default, using credentials: any Git.CredentialsProvider = GitCredentialsProvider.anonymousProvider) throws -> Git.GitRepository
+}
+@_hasMissingDesignatedInitializers public class GitStashListOptions {
+  @objc deinit
+}
+extension Git.GitRepository {
+  public func listLogRecords(options: Git.GitLogOptions = GitLogOptions.default) throws -> Git.GitLogRecordList
+  public func retrieveLogRecordsComparison(options: Git.GitLogCompareOptions) throws -> Git.GitLogRecordList
+}
+public protocol GitCommonError : Swift.Error {
+  var rawMessage: Swift.String { get }
+}
+public enum GitError : Swift.Error {
+  case checkoutError(message: Swift.String)
+  case cloneError(message: Swift.String)
+  case cleanError(message: Swift.String)
+  case commitError(message: Swift.String)
+  case tagError(message: Swift.String)
+  case initError(message: Swift.String)
+  case stashError(message: Swift.String)
+  case stashApplyError(message: Swift.String)
+  case stashApplyConflict(message: Swift.String)
+  case stashDropError(message: Swift.String)
+  case fetchError(message: Swift.String)
+  case pushError(message: Swift.String)
+  case pullError(message: Swift.String)
+  case remoteUnableToList(message: Swift.String)
+  case remoteUnableToAdd(message: Swift.String)
+  case remoteUnableToRename(message: Swift.String)
+  case remoteUnableToChangeURL(message: Swift.String)
+  case mergeHasBeenFallen(message: Swift.String)
+  case mergeUnableToAbort(message: Swift.String)
+  case cherryPickCouldNotApplyChange(message: Swift.String)
+  case cherryPickHasBeenFallen(message: Swift.String)
+  case cherryHasBeenFallen(message: Swift.String)
+  case invalidBranchName(name: Swift.String, message: Swift.String)
+  case canNotCreateBranch(name: Swift.String, message: Swift.String)
+}
+public enum RepositoryError : Swift.Error {
+  case activeOperationInProgress
+  case repositoryNotInitialized
+  case repositoryHasBeenAlreadyCloned
+  case repositoryLocalPathNotExists
+  case repositoryInvalidGitDirectory(atPath: Swift.String)
+  case repositoryCreatePathNotExists
+  case repositoryCreateInvalidPath
+  case cloneErrorDirectoryIsNotEmpty(atPath: Swift.String)
+  case pullFallenRemotesNotFound
+  case unableToCreateTemporaryPath
+  case unableToApplyStashRecordNotFound(record: any Git.RepositoryStashRecord)
+  case unableToDropStashRecordNotFound(record: any Git.RepositoryStashRecord)
+  case mergeFinishedWithConflicts
+  case thereIsNoMergeToAbort
+  case branchNotFound(name: Swift.String)
+}
+extension Git.GitError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+extension Git.GitError : Git.GitCommonError {
+  public var rawMessage: Swift.String {
+    get
+  }
+}
+extension Git.RepositoryError : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+public enum GitTagOptions {
+  case annotate(tag: Swift.String, message: Swift.String, commitHash: Swift.String? = nil)
+  case delete(tag: Swift.String)
+  case lightWeight(tag: Swift.String, commitHash: Swift.String? = nil)
+}
+final public class GitTagRecordList {
+  required public init(_ records: [any Git.RepositoryTagRecord] = [])
+  final public var records: [any Git.RepositoryTagRecord] {
+    get
+  }
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class GitCleanOptions {
+  public var force: Swift.Bool
+  public var includeUntrackedSubdirectories: Swift.Bool
+  @objc deinit
+}
+extension Git.GitStashApplyOptions.DropOptions : Swift.Equatable {}
+extension Git.GitStashApplyOptions.DropOptions : Swift.Hashable {}
+extension Git.GitCommitOptions.FileOptions : Swift.Equatable {}
+extension Git.GitCommitOptions.FileOptions : Swift.Hashable {}
+extension Git.GitCherryRevision.RevisionType : Swift.Equatable {}
+extension Git.GitCherryRevision.RevisionType : Swift.Hashable {}
+extension Git.GitResetOptions.Mode : Swift.Equatable {}
+extension Git.GitResetOptions.Mode : Swift.Hashable {}
+extension Git.GitMergeOptions.FastForwardOptions : Swift.Equatable {}
+extension Git.GitMergeOptions.FastForwardOptions : Swift.Hashable {}
+extension Git.GitFetchOptions.RemoteOptions : Swift.Equatable {}
+extension Git.GitFetchOptions.RemoteOptions : Swift.Hashable {}
+extension Git.GitFetchOptions.TagOptions : Swift.Equatable {}
+extension Git.GitFetchOptions.TagOptions : Swift.Hashable {}
+extension Git.GitCloneOptions.CheckoutOptions : Swift.Equatable {}
+extension Git.GitCloneOptions.CheckoutOptions : Swift.Hashable {}
+extension Git.GitCloneOptions.TagsOptions : Swift.Equatable {}
+extension Git.GitCloneOptions.TagsOptions : Swift.Hashable {}
+extension Git.GitCloneOptions.SparseOptions : Swift.Equatable {}
+extension Git.GitCloneOptions.SparseOptions : Swift.Hashable {}
+extension Git.GitFileStatus.ModificationState : Swift.Equatable {}
+extension Git.GitFileStatus.ModificationState : Swift.Hashable {}
+extension Git.GitFileStatus.ModificationState : Swift.RawRepresentable {}
+extension Git.GitFileStatus.ConflictState : Swift.Equatable {}
+extension Git.GitFileStatus.ConflictState : Swift.Hashable {}
+extension Git.CredentialsProviderError : Swift.Equatable {}
+extension Git.CredentialsProviderError : Swift.Hashable {}
+extension Git.GitFileStatusList.Exception : Swift.Equatable {}
+extension Git.GitFileStatusList.Exception : Swift.Hashable {}

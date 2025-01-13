@@ -1,0 +1,11 @@
+framework module Git {
+  umbrella header "Git.h"
+  export *
+
+  module * { export * }
+}
+
+module Git.Swift {
+  header "Git-Swift.h"
+  requires objc
+}
