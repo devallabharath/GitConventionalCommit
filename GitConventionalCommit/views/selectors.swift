@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct Selectors: View {
-  @Environment(\.colorScheme) var theme
   let cType: Binding<CommitType>
   let cScope: Binding<CommitScope>
   
@@ -40,7 +39,7 @@ struct Selectors: View {
     }
     .frame(height: 30, alignment: .leading)
     .padding(.horizontal, 5)
-    .background(theme == .dark ? Color.black.opacity(0.1) : Color.white)
+    .background(Color.gray.opacity(0.1))
   }
 }
 

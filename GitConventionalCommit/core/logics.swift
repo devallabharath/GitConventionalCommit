@@ -7,27 +7,31 @@
 
 import SwiftUI
 
-func getCommitMsg(_ url: URL) -> String {
-  var msg: String
-
+func getCommitMsg(_ url: URL) -> (String, Bool) {
   if url.isFileURL {
     let fileManager = FileManager.default
     if fileManager.fileExists(atPath: url.path) {
       do {
-        msg = try String(contentsOf: url, encoding: .utf8)
+        let msg = try String(contentsOf: url, encoding: .utf8)
+        return (msg, false)
       } catch {
-        msg = "\(error)"
-        print("Error reading file: \(error)")
+        return ("Error reading file \(url.path)", true)
       }
     } else {
-      msg = "No file found at \(url.path)"
-      print("No file found at \(url.path)")
+      return ("No file found at \(url.path)", true)
     }
   } else {
-    msg = "Not a file url"
+    return ("Not a file url", true)
   }
+}
 
-  return msg
+func writeCommitMsg(_ msg: String, _ url: URL) -> Error? {
+  do {
+    try msg.write(toFile: url.path, atomically: true, encoding: .utf8)
+    return nil
+  } catch {
+    return error
+  }
 }
 
 // is comment line
