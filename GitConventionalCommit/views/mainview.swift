@@ -45,7 +45,7 @@ struct MainView: View {
       } catch {
         self.Msg = "\(error)"
       }
-      self.Msg = cTemplate
+      self.Msg = getCommitMsg(url)
     }
   }
 
