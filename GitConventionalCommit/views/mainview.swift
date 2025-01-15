@@ -15,7 +15,6 @@ let cTemplate = """
 """
 
 struct MainView: View {
-  @Environment(\.colorScheme) var theme
   let args = CommandLine.arguments
   @State var cUrl: URL? = nil
   @State var cType: CommitType = .docs
@@ -59,11 +58,11 @@ struct MainView: View {
           Selectors($cType, $cScope)
           Divider()
           Editor(msg: $Msg)
-          Divider()
           Statusbar($status, commit, cancel)
         }
       }
-      .background(theme == .dark ? Color.black.opacity(0.5):Color.white.opacity(0.5))
+      .foregroundColor(Color("fg"))
+      .background(Color("bg"))
     }
   }
 

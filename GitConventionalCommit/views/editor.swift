@@ -13,7 +13,7 @@ struct Editor: View {
   var body: some View {
     TextEditor(text: $msg)
       .scrollContentBackground(.hidden)
-      .font(.system(size: 13))
+      .font(.system(size: 12))
       .monospaced(true)
       .lineSpacing(2)
       .padding(4)

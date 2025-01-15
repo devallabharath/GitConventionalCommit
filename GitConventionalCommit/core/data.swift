@@ -82,14 +82,22 @@ struct Files {
   var untracked: [File] = []
 }
 
+enum FileType {
+  case staged
+  case unstaged
+  case untracked
+}
+
 class File: Identifiable {
   let id = UUID()
+  let type: FileType
   let path: String
   let state: GitFileStatus.State
   let hasChangesInIndex: Bool
   let hasChangesInWorktree: Bool
   
-  init(_ file: GitFileStatus) {
+  init(_ file: GitFileStatus, _ type: FileType) {
+    self.type = type
     self.path = file.path
     self.state = file.state
     self.hasChangesInIndex = file.hasChangesInIndex
@@ -110,7 +118,7 @@ class File: Identifiable {
   }
   
   var symbol: String {
-    let s = hasChangesInIndex ? state.index: state.worktree
+    let s = type == .staged ? state.index: state.worktree
     switch s {
       case .added:
         return "A"
@@ -130,22 +138,20 @@ class File: Identifiable {
   }
   
   var color: Color {
-    let s = hasChangesInIndex ? state.index: state.worktree
+    let s = type == .staged ? state.index: state.worktree
     switch s {
-      case .unmodified:
-        return .white
       case .added:
-        return .green
+        return Color("green")
       case .deleted:
-        return .red
+        return Color("red")
       case .modified:
-        return .yellow
+        return Color("yellow")
       case .renamed:
         return .orange
       case .ignored:
-        return .gray
+        return Color("gray")
       default:
-        return .white
+        return Color("fg")
     }
   }
   

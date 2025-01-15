@@ -39,7 +39,7 @@ struct Selectors: View {
     }
     .frame(height: 30, alignment: .leading)
     .padding(.horizontal, 5)
-    .background(Color.gray.opacity(0.1))
+    .background(Color("morebg"))
   }
 }
 
