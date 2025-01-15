@@ -50,7 +50,14 @@ struct MainView: View {
 
   var body: some View {
     if repo == nil {
-      Editor(msg: $Msg)
+      VStack {
+        Spacer()
+        Text($Msg.wrappedValue)
+        Spacer()
+        Button("Quit") {cancel()}
+        Spacer()
+      }
+      .padding()
     } else {
       HSplitView {
         Sidebar(repo!)

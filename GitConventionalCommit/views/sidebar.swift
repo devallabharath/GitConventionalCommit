@@ -26,9 +26,14 @@ struct Sidebar: View {
         Divider()
         ScrollView {
           VStack(spacing: 10) {
-            if files.staged.count > 0 {renderFiles("Staged", files.staged)}
-            if files.unstaged.count > 0 {renderFiles("UnStaged", files.unstaged)}
-            if files.untracked.count > 0 {renderFiles("UnTracked", files.untracked)}
+            if files.staged.count+files.unstaged.count+files.untracked.count == 0 {
+              Text("No changes found")
+              Button(" Quit ", action: {exit(0)})
+            } else {
+              if files.staged.count > 0 {renderFiles("Staged", files.staged)}
+              if files.unstaged.count > 0 {renderFiles("UnStaged", files.unstaged)}
+              if files.untracked.count > 0 {renderFiles("UnTracked", files.untracked)}
+            }
           }
         }
         .padding(.vertical, 5)
@@ -66,7 +71,10 @@ struct Sidebar: View {
     HStack {
       Text("Changes")
       Spacer()
-      Button("R", action: getFiles)
+      Button("", systemImage: "arrow.clockwise", action: getFiles)
+        .buttonStyle(.plain)
+        .font(.system(size: 13))
+        .help("Refresh")
     }
     .padding(.horizontal, 5)
     .frame(height: 30)
@@ -81,35 +89,22 @@ struct Sidebar: View {
     .font(.system(size: 11))
   }
   
-  func renderFile(_ file: File) -> some View {
-    HStack(spacing: 2) {
-      Image(systemName: file.icon)
-      Text(file.name)
-        .help(file.path)
-      Spacer()
-      Text(file.symbol)
-        .fontWeight(.bold)
-        .foregroundColor(file.color)
-    }
-    .font(.system(size: 11))
-    .frame(height: 14, alignment: .center)
-    .padding(.horizontal, 5)
-    .contextMenu {
-      Button("Stage") {
-        try? repo.add(files: [file.path])
-        getFiles()
-      }
-      Button("Unstage") {
-        try? repo.reset(files: [file.path])
-        getFiles()
-      }
-    }
-  }
-  
   func renderFiles(_ title: String, _ files: [File]) -> some View {
     VStack(spacing: 4) {
       Title(title, files.count)
-      ForEach(files) {file in renderFile(file)}
+      ForEach(files) {file in
+        SidebarFile(file)
+        .contextMenu {
+          Button("Stage") {
+            try? repo.add(files: [file.path])
+            getFiles()
+          }
+          Button("Unstage") {
+            try? repo.reset(files: [file.path])
+            getFiles()
+          }
+        }
+      }
     }
     .padding(.horizontal, 5)
   }

@@ -23,20 +23,14 @@ struct Statusbar: View {
       Text(status.wrappedValue)
       Spacer()
       HStack {
-        // Cancel button
         Button("Cancel") {self.cancel()}
-          .frame(height: 25)
-          .cornerRadius(4)
-        // Commit button
+          .frame(height: 25).cornerRadius(4)
         Button("Commit") {self.commit()}
-          .frame(height: 25)
-//          .background(Color.accentColor)
-          .cornerRadius(4)
+          .frame(height: 25).cornerRadius(4)
       }
     }
     .padding(.horizontal, 10)
     .padding(.vertical, 3)
-//    .background(Color("gray").opacity(0.2))
     .background(Color("morebg"))
   }
 }

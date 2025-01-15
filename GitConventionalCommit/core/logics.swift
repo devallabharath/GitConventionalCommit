@@ -8,20 +8,15 @@
 import SwiftUI
 
 func getCommitMsg(_ url: URL) -> String{
-  if url.isFileURL {
-    let fileManager = FileManager.default
-    if fileManager.fileExists(atPath: url.path) {
-      do {
-        let msg = try String(contentsOf: url, encoding: .utf8)
-        return msg
-      } catch {
-        return "Error reading file \(url.path)"
-      }
-    } else {
-      return "No file found at \(url.path)"
+  let fileManager = FileManager.default
+  if fileManager.fileExists(atPath: url.path) {
+    do {
+      return try String(contentsOf: url, encoding: .utf8)
+    } catch {
+      return "Error reading file \(url.path)\n\(error)"
     }
   } else {
-    return "Not a file url"
+    return "No file found at \(url.path)"
   }
 }
 
@@ -37,7 +32,3 @@ func writeCommitMsg(_ msg: String, _ url: URL) -> Error? {
 // is comment line
 
 // get subject line
-
-// get body start & end line
-
-// parse git status
