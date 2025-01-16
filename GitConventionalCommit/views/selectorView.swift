@@ -1,25 +1,16 @@
-//
-//  selectors.swift
-//  GitConventionalCommit
-//
-//  Created by Devalla Bharath on 1/5/25.
-//
-
 import SwiftUI
 
-struct Selectors: View {
-  let cType: Binding<CommitType>
-  let cScope: Binding<CommitScope>
+struct SelectorView: View {
+  @ObservedObject var model:DataModel
   
-  init(_ Type: Binding<CommitType>, _ Scope: Binding<CommitScope>) {
-    self.cType = Type
-    self.cScope = Scope
+  init(_ model: DataModel) {
+    self.model = model
   }
   
   var body: some View {
     HStack(spacing: 20) {
       // Type picker
-      Picker("Type", selection: self.cType) {
+      Picker("Type", selection: $model.cType) {
         ForEach(CommitType.allCases, id: \.self) {
           type in Text(type.rawValue)
         }
@@ -27,7 +18,7 @@ struct Selectors: View {
       .frame(width: 200, height: 20)
       
       // Scope picker
-      Picker("Scope", selection: self.cScope) {
+      Picker("Scope", selection: $model.cScope) {
         ForEach(CommitScope.allCases, id: \.self) {
           scope in Text("\(scope.icon) \(scope.rawValue)")
         }
@@ -43,11 +34,8 @@ struct Selectors: View {
   }
 }
 
-struct CommitSelectors_Previews: PreviewProvider {
-  @State static var cType: CommitType = .chore
-  @State static var cScope: CommitScope = .doc
-  
+struct SelectorView_Previews: PreviewProvider {
   static var previews: some View {
-    Selectors($cType, $cScope)
+    SelectorView(DataModel())
   }
 }

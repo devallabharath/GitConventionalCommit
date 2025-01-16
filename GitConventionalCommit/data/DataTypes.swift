@@ -1,9 +1,3 @@
-//
-//  data.swift
-//  GitConventionalCommit
-//
-//  Created by Devalla Bharath on 1/6/25.
-//
 import SwiftUI
 import Git
 
@@ -76,19 +70,13 @@ var UnicodeIcons: [CommitScope: String] = [
   .revert: "⏪"
 ]
 
-struct Files {
-  public var staged: [File] = []
-  var unstaged: [File] = []
-  var untracked: [File] = []
-}
-
 enum FileType {
   case staged
   case unstaged
   case untracked
 }
 
-class File: Identifiable {
+struct File: Identifiable {
   let id = UUID()
   let type: FileType
   let path: String
@@ -161,4 +149,10 @@ class File: Identifiable {
     }
     return "text.page.fill"
   }
+}
+
+struct Files {
+  public var staged: [File] = []
+  var unstaged: [File] = []
+  var untracked: [File] = []
 }
