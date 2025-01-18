@@ -2,6 +2,8 @@ import SwiftUI
 
 @main
 struct GitConventionalCommitApp: App {
+  @StateObject var model = DataModel()
+  
   init() {
     DispatchQueue.main.async {
       NSApp.setActivationPolicy(.regular)
@@ -13,6 +15,8 @@ struct GitConventionalCommitApp: App {
   var body: some Scene {
     Window ("GitConventionalCommit", id: "main"){
       MainView()
+      .environmentObject(model)
+      .environmentObject(RepoHandler(model))
       .onAppear() {
         if NSApp.windows.count > 0 {
           let win = NSApp.windows.first!

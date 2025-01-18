@@ -156,3 +156,33 @@ struct Files {
   var unstaged: [File] = []
   var untracked: [File] = []
 }
+
+struct Dialog {
+  var show: Bool = false
+  var title: String = ""
+  var message: String = ""
+  var icon: String = ""
+  var actionTitle: String = ""
+  var action: () -> Void = {}
+  var actionRole: ButtonRole? = nil
+  var severity: DialogSeverity = .automatic
+  
+  mutating func show(
+    title: String = "Are you sure?",
+    icon: String = "questionmark.app.fill",
+    message: String = "",
+    actionTitle: String = "Continue",
+    action: @escaping () -> Void,
+    actionRole: ButtonRole? = nil,
+    severity: DialogSeverity = .automatic
+  ) {
+    self.title = title
+    self.message = message
+    self.icon = icon
+    self.actionTitle = actionTitle
+    self.action = action
+    self.actionRole = actionRole
+    self.severity = severity
+    self.show = true
+  }
+}

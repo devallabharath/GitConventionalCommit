@@ -1,31 +1,27 @@
 import SwiftUI
 
 struct StatusbarView: View {
-  @ObservedObject var model:DataModel
-  
-  init(_ model: DataModel) {
-    self.model = model
-  }
-  
+  @EnvironmentObject var model: DataModel
+
   var body: some View {
     HStack {
       Text(model.status)
       Spacer()
       HStack {
-        Button("Cancel") {model.quit()}
+        Button("Cancel") {
+          model.dialog.show(
+            actionTitle: "Quit",
+            action: model.quit,
+            actionRole: .destructive,
+            severity: .critical
+          )
+        }
           .frame(height: 25).cornerRadius(4)
-        Button("Commit") {model.commit()}
+        Button("Commit") { model.commit() }
           .frame(height: 25).cornerRadius(4)
       }
     }
     .padding(.horizontal, 10)
-    .padding(.vertical, 3)
     .background(Color("morebg"))
-  }
-}
-
-struct Statusbar_Previews: PreviewProvider {
-  static var previews: some View {
-    StatusbarView(DataModel())
   }
 }

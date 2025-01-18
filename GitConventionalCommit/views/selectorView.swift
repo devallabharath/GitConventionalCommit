@@ -1,11 +1,7 @@
 import SwiftUI
 
 struct SelectorView: View {
-  @ObservedObject var model:DataModel
-  
-  init(_ model: DataModel) {
-    self.model = model
-  }
+  @EnvironmentObject var model: DataModel
   
   var body: some View {
     HStack(spacing: 20) {
@@ -31,11 +27,5 @@ struct SelectorView: View {
     .frame(height: 30, alignment: .leading)
     .padding(.horizontal, 5)
     .background(Color("morebg"))
-  }
-}
-
-struct SelectorView_Previews: PreviewProvider {
-  static var previews: some View {
-    SelectorView(DataModel())
   }
 }
