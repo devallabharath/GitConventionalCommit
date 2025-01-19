@@ -19,10 +19,10 @@ struct MainView: View {
       }
       .foregroundColor(Color("fg"))
       .background(Color("bg"))
-      .confirmationDialog(model.dialog.title, isPresented: $model.dialog.show) {
+      .confirmationDialog(model.dialog.title, isPresented: $model.dialog.visible) {
         Button(model.dialog.actionTitle, role: model.dialog.actionRole ?? .none) {
           model.dialog.action()
-          model.dialog.show = false
+          model.dialog.visible = false
         }
       } message: {
         Text(model.dialog.message)

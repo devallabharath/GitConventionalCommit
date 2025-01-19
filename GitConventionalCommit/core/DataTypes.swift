@@ -70,10 +70,10 @@ var UnicodeIcons: [CommitScope: String] = [
   .revert: "⏪"
 ]
 
-enum FileType {
-  case staged
-  case unstaged
-  case untracked
+enum FileType: String {
+  case staged = "Staged"
+  case unstaged = "Unstaged"
+  case untracked = "Untracked"
 }
 
 struct File: Identifiable {
@@ -158,7 +158,7 @@ struct Files {
 }
 
 struct Dialog {
-  var show: Bool = false
+  var visible: Bool = false
   var title: String = ""
   var message: String = ""
   var icon: String = ""
@@ -183,6 +183,15 @@ struct Dialog {
     self.action = action
     self.actionRole = actionRole
     self.severity = severity
-    self.show = true
+    self.visible = true
   }
+}
+
+enum FileOperation {
+  case diff
+  case stage
+  case unstage
+  case untrack
+  case stash
+  case discard
 }

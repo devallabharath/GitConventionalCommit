@@ -40,7 +40,12 @@ class DataModel: ObservableObject {
   
   func quit() {
     print("Cancel button pressed")
-    NSApp.terminate(nil)
+    dialog.show(
+      actionTitle: "Quit",
+      action: {NSApp.terminate(nil)},
+      actionRole: .destructive,
+      severity: .critical
+    )
   }
   
   func commit() {

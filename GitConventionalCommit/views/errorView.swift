@@ -10,7 +10,7 @@ struct ErrorView: View {
         Text(model.cMsg)
       }
       Spacer()
-      Button("Quit") {model.quit()}
+      Button("Quit", action: model.quit)
       Spacer()
     }
     .padding()

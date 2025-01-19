@@ -13,7 +13,7 @@ struct GitConventionalCommitApp: App {
   }
 
   var body: some Scene {
-    Window ("GitConventionalCommit", id: "main"){
+    Window ("GitConventionalCommit", id: "mainwin"){
       MainView()
       .environmentObject(model)
       .environmentObject(RepoHandler(model))
@@ -25,6 +25,9 @@ struct GitConventionalCommitApp: App {
           win.standardWindowButton(.zoomButton)?.isEnabled = false
         }
       }
+    }
+    Window("DiffView", id: "diffwin") {
+      Text("this is the diff view")
     }
   }
 }

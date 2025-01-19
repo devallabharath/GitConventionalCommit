@@ -23,9 +23,9 @@ class RepoHandler: ObservableObject {
   }
   
   func branchStatus() -> String {
-    let local = try? repo?.listReferences().currentReference
-    let remote = try? repo?.listRemotes().remotes.first
-    print(local?.name.shortName ?? "local", remote?.name ?? "remote")
+//    let local = try? repo?.listReferences().currentReference
+//    let remote = try? repo?.listRemotes().remotes.first
+//    print(local?.name.shortName ?? "local", remote?.name ?? "remote")
     return "↓3 ↑2"
   }
   
@@ -56,67 +56,90 @@ class RepoHandler: ObservableObject {
     getFiles()
   }
   
-  func stage(_ path: String) {
+  func stage(_ path: [String]) {
     do {
-      try repo!.add(files: [path])
+      try repo!.add(files: path)
       getFiles()
     } catch {
       model.status = error.localizedDescription
     }
+  }
+  
+  func stageUnstaged() {
+    model.dialog.show(
+      message: "All unstaged files will be STAGED.",
+      actionTitle: "Stage",
+      action: { self.stage(self.model.files.unstaged.map(\.path)) },
+      severity: .standard
+    )
   }
   
   func stageAll() {
+    model.dialog.show(
+      message: "Everything will be STAGED including untracked.",
+      actionTitle: "Stage",
+      action: { self.stage(self.model.files.unstaged.map(\.path)) },
+      severity: .standard
+    )
+  }
+  
+  func unStage(_ path: [String]) {
     do {
-      try repo!.add(files: model.files.unstaged.map(\.path))
+      try repo!.reset(files: path)
       getFiles()
     } catch {
       model.status = error.localizedDescription
     }
   }
   
-  func unStage(_ path: String) {
-    do {
-      try repo!.reset(files: [path])
-      getFiles()
-    } catch {
-      model.status = error.localizedDescription
-    }
+  func unStageAll () {
+    model.dialog.show(
+      message: "Everything will be UNSTAGED",
+      actionTitle: "UnStage",
+      action: { self.unStage(self.model.files.staged.map(\.path)) },
+      actionRole: .destructive,
+      severity: .critical
+    )
   }
   
-  func unStageAll() {
-    do {
-      try repo!.reset(files: model.files.staged.map(\.path))
-      getFiles()
-    } catch {
-      model.status = error.localizedDescription
+  func discardChanges(_ paths: [String], _ msg: String? = nil) {
+    func fn(_ paths: [String]) {
+      do {
+        try repo!.discardChanges(in: paths)
+        getFiles()
+      } catch {
+        model.status = error.localizedDescription
+      }
     }
+    
+    model.dialog.show(
+      message: msg ?? "Selected files will be DISCARDED",
+      actionTitle: "Discard",
+      action: { fn(paths) },
+      actionRole: .destructive,
+      severity: .critical
+    )
   }
   
   func discardStaged() {
-    do {
-      try repo!.discardChanges(in: model.files.staged.map(\.path))
-      model.files.staged.removeAll()
-    } catch {
-      model.status = error.localizedDescription
-    }
+    discardChanges(
+      model.files.staged.map(\.path),
+      "Staged changes will be DISCARDED"
+    )
   }
   
   func discardUnstaged() {
-    do {
-      try repo!.discardChanges(in: model.files.unstaged.map(\.path))
-      model.files.unstaged.removeAll()
-    } catch {
-      model.status = error.localizedDescription
-    }
+    discardChanges(
+      model.files.unstaged.map(\.path),
+      "UnStaged changes will be DISCARDED"
+    )
   }
   
-  func discardChanges() {
-    do {
-      try repo!.discardAllLocalChanges()
-      getFiles()
-    } catch {
-      model.status = error.localizedDescription
-    }
+  func discardAll() {
+    discardChanges(
+      model.files.staged.map(\.path) + model.files.unstaged.map(\.path),
+      "Everything will be DISCARDED"
+    )
   }
   
   func pull() {

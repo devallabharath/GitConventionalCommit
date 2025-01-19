@@ -8,35 +8,35 @@ struct MenuView: View {
     Menu("", systemImage: "ellipsis.rectangle.fill") {
       // Repo menu
       Section("Repo") {
-        Button("Pull", systemImage: "icloud.and.arrow.down.fill", action: repo.pull)
-        Button("Push", systemImage: "icloud.and.arrow.up.fill", action: repo.push)
+        Button("Pull", action: repo.pull)
+        Button("Push", action: repo.push)
       }
       // status menu
       Section("Files") {
-        Menu("Stage", systemImage: "") {
-          Button("Stage UnStaged", systemImage: "", action: repo.stageAll)
-          Button("Stage Untracked", systemImage: "", action: repo.stageAll)
-          Button("Stage All", systemImage: "", action: repo.stageAll)
+        Menu("Stage") {
+          Button("Stage UnStaged", action: repo.stageUnstaged)
+          Button("Stage Untracked", action: repo.stageAll)
+          Button("Stage All", action: repo.stageAll)
         }
-        Button("UnStage All", systemImage: "", action: repo.unStageAll)
-        Menu("Ignore", systemImage: "") {
-          Button("Ignore Untracked", systemImage: "", action: repo.unStageAll)
+        Button("UnStage All", action: repo.unStageAll)
+        Menu("Stash") {
+          Button("Stash Staged", action: repo.unStageAll)
+          Button("Stash Unstaged", action: repo.unStageAll)
+          Button("Stash Untracked", action: repo.unStageAll)
+          Button("Stash All", action: repo.unStageAll)
         }
-        Menu("Discard Changes", systemImage: "") {
-          Button("Discard Staged", systemImage: "", action: repo.discardStaged)
-          Button(
-            "Discard Unstaged",
-            systemImage: "",
-            action: repo.discardUnstaged
-          )
-          Button("Discard All", systemImage: "", action: repo.discardChanges)
+      }
+      Section("Harmfull") {
+        Menu("Discard Changes") {
+          Button("Discard Staged", action: repo.discardStaged)
+          Button("Discard Unstaged", action: repo.discardUnstaged)
+          Button("Discard All", action: repo.discardAll)
         }
-        
       }
       // App menu
-      Section("Warn") {
-        Button("Refresh", systemImage: "arrow.clockwise", action: repo.refresh)
-        Button("Quit", systemImage: "xmark", action: model.quit)
+      Section("App") {
+        Button("Refresh", action: repo.refresh)
+        Button("Quit", action: model.quit)
       }
     }
     .menuIndicator(.hidden)
