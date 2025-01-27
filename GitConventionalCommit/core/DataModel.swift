@@ -87,13 +87,13 @@ class DataModel: ObservableObject {
   }
   
   func commit() {
-    let msg = cMsg
-    if msg.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+    let msg = cMsg.trimmingCharacters(in: .whitespacesAndNewlines)
+    if msg.isEmpty {
       print("Error: Commit message cannot be empty.")
       return
     }
-    let message = "\(cType.rawValue): \(cScope.icon) \(msg)"
-    print("Commit message: \(message)")
+    cMsg = "\(cType.rawValue): \(cScope.icon) \(msg)"
+    print("Commit message: \(cMsg)")
     let err = writeCommitMsg()
     if err == nil {
       NSApp.terminate(nil)
