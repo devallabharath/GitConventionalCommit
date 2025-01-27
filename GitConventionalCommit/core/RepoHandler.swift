@@ -45,8 +45,20 @@ class RepoHandler: ObservableObject {
     model.loading = false
   }
   
+  func getLogs() {
+    do {
+      model.logs = try model.repo!.listLogRecords().records
+    } catch {
+      model.status.msg = error.localizedDescription
+    }
+  }
+  
   func refresh() {
-    model.refreshMsg()
+    if model.mode == .normal {
+      getLogs()
+    } else {
+      model.refreshMsg()
+    }
     getFiles()
   }
   

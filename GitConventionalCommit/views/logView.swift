@@ -4,10 +4,9 @@ import Git
 struct LogView: View {
   @EnvironmentObject var model: DataModel
   @EnvironmentObject var repo: RepoHandler
-  @State var logs: [any RepositoryLogRecord] = []
   
   var body: some View {
-    List(logs, id: \.shortHash) { log in
+    List(model.logs, id: \.shortHash) { log in
       Section(
         content: { LogBody(log) },
         header: { LogHeader(log) }
@@ -15,9 +14,8 @@ struct LogView: View {
       .monospaced()
       .listRowSeparator(.hidden)
     }
-    .defaultScrollAnchor(UnitPoint.bottom)
     .scrollContentBackground(.hidden)
-    .onAppear {getLogs()}
+    .onAppear {repo.getLogs()}
   }
   
   private func LogBody(_ log: any RepositoryLogRecord) -> some View {
@@ -25,7 +23,7 @@ struct LogView: View {
       VStack(alignment: .leading) {
         Label(log.hash, systemImage: "number")
         Label(
-          log.commiterDate.formatted(date: .abbreviated, time: .shortened),
+          log.commiterDate.formatted(date: .complete, time: .complete),
           systemImage: "calendar"
         )
         Label("\(log.authorName) (\(log.authorEmail))", systemImage: "person.crop.circle.fill")
@@ -33,52 +31,65 @@ struct LogView: View {
       .font(.subheadline)
       .lineLimit(1)
       .italic()
-      Text(log.body).padding(.top, 10).bold()
+      Text(log.body).padding(.top, 10)
       Divider()
     }
     .foregroundColor(Color.gray)
     .font(.body)
+    .textSelection(.enabled)
   }
   
   private func LogHeader(_ log: any RepositoryLogRecord) -> some View {
     HStack(alignment: .center, spacing: 5) {
-      Text("\(log.shortHash):")
-      Text(log.subject)
-        .lineLimit(1)
+      CopyButton(log.shortHash)
+      Text(log.subject).font(.headline).lineLimit(1)
       Spacer()
       if log.refNames.count > 0 {
-        if let remote = parseNames(log.refNames, "origin/") {
-          Label(remote.trimmingCharacters(in: .whitespaces), systemImage: "cloud")
-            .foregroundColor(Color("blue"))
+        let (locals, remotes, tags) = parseNames(log.refNames)
+        if !locals.isEmpty {
+          Label(
+            locals.joined(separator: ","),
+            systemImage: "circle.dotted.circle"
+          )
         }
-        if let tag = parseNames(log.refNames, "tag:"){
-          Text(" \(tag.trimmingCharacters(in: .whitespaces)) ")
-            .foregroundColor(Color("bg"))
-            .background(Color("blue"))
-            .cornerRadius(3)
-            .font(.subheadline)
+        if !remotes.isEmpty {
+          Label(
+            remotes.joined(separator: ","),
+            systemImage: "checkmark.icloud"
+          )
+        }
+        
+        if !tags.isEmpty {
+          ForEach(tags, id: \.self) { tag in
+            Text(" \(tag) ")
+              .foregroundColor(Color("bg"))
+              .background(Color("fg"))
+              .cornerRadius(3)
+          }
         }
       }
     }
-    .font(.headline)
+    .font(.subheadline)
   }
   
-  func parseNames(_ names: String, _ str: String) -> String? {
-    var tag: String? = nil
-    print(names)
-    names.split(separator: ",").forEach {name in
-      if name.contains(str) {
-        tag = String(name.dropFirst(str.count+1))
+  func parseNames(_ names: String) ->
+    ([String], [String], [String]) {
+    var locals: [String] = []
+    var remotes: [String] = []
+    var tags: [String] = []
+
+    for name in names.split(separator: ", ") {
+      if name.contains("HEAD -> ") {
+        locals.append(String(name.dropFirst(8)))
+      } else if name.contains("origin/") {
+        remotes.append(String(name.dropFirst(7)))
+      } else if name.contains("tag: ") {
+        tags.append(String(name.dropFirst(5)))
+      } else {
+        locals.append(String(name).trimmingCharacters(in: .whitespaces))
       }
     }
-    return tag
-  }
-  
-  func getLogs() {
-    do {
-      self.logs = try model.repo!.listLogRecords().records
-    } catch {
-      print(error)
-    }
+    
+    return (locals, remotes, tags)
   }
 }

@@ -98,7 +98,6 @@ struct OpenMode: View {
     .help(path)
     .frame(height: 36)
     .contentShape(Rectangle())
-    .pointerStyle(.link)
     .onTapGesture {
       model.chooseRepo(URL(fileURLWithPath: path))
     }
@@ -112,7 +111,6 @@ struct OpenMode: View {
         Spacer()
         Button("Clear") {model.clearRecents()}
           .buttonStyle(.link)
-          .pointerStyle(.link)
       }
       if model.recents.isEmpty {
         Text(NSLocalizedString("No Recent Projects", comment: ""))

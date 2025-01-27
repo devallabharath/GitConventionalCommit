@@ -11,6 +11,7 @@ class DataModel: ObservableObject {
   @Published var cType: CommitType = .none
   @Published var cScope: CommitScope = .none
   @Published var status: Status = Status()
+  @Published var logs: [any RepositoryLogRecord] = []
   @Published var loading: Bool = true
   @Published var files: Files = Files()
   @Published var dialog: Dialog = Dialog()
