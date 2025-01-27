@@ -8,8 +8,6 @@ struct SidebarView: View {
   
   var body: some View {
     VStack(spacing: 0){
-      HeaderView()
-      Divider()
       if model.loading {
         ProgressView()
       } else {
@@ -28,24 +26,21 @@ struct SidebarView: View {
           Button("Stash") { handleSelection(ids, .stash) }
           Button("Discard") { handleSelection(ids, .discard) }
         }
-        .listStyle(.sidebar)
       }
     }
-    .frame(minWidth: 100, maxWidth: 300, maxHeight: .infinity)
-    .background(Color("morebg"))
     .onAppear { repo.getFiles() }
+    .toolbar { ToolbarItem(placement: .principal) { HeaderView() } }
   }
   
   func HeaderView() -> some View {
-    HStack(spacing: 2) {
-      Text(repo.repoName())
+    HStack(spacing: 5) {
+      if let name = repo.branchName() {
+        Text(name)
+      }
       Text(repo.branchStatus())
         .font(.system(size: 10))
       Spacer()
-      MenuView()
     }
-    .padding(.horizontal, 5)
-    .frame(height: 30)
   }
   
   func FileView(_ file: File) -> some View {

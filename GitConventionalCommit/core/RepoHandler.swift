@@ -2,23 +2,17 @@ import Git
 import SwiftUI
 
 class RepoHandler: ObservableObject {
-  private var repo: GitRepository? = nil
   var model: DataModel
   
   init(_ model: DataModel) {
     self.model = model
-    self.repo = try? GitRepository(atPath: model.cUrl!.pathComponents.dropLast(2).joined(separator: "/"))
   }
   
-  func isRepo() -> Bool {
-    repo != nil
-  }
-  
-  func repoName() -> String {
+  func branchName() -> String? {
     do {
-      return try repo?.listReferences().currentReference?.name.shortName ?? "Changes"
+      return try model.repo?.listReferences().currentReference?.name.shortName ?? nil
     }catch {
-      return "Changes"
+      return nil
     }
   }
   
@@ -33,7 +27,7 @@ class RepoHandler: ObservableObject {
     model.loading = true
     model.files = Files()
     
-    let files = try? repo!.listStatus(options: .default)
+    let files = try? model.repo!.listStatus(options: .default)
     
     for file in files! {
       if file.hasChangesInIndex {
@@ -58,10 +52,10 @@ class RepoHandler: ObservableObject {
   
   func stage(_ path: [String]) {
     do {
-      try repo!.add(files: path)
+      try model.repo!.add(files: path)
       getFiles()
     } catch {
-      model.status = error.localizedDescription
+      model.status.msg = error.localizedDescription
     }
   }
   
@@ -85,10 +79,10 @@ class RepoHandler: ObservableObject {
   
   func unStage(_ path: [String]) {
     do {
-      try repo!.reset(files: path)
+      try model.repo!.reset(files: path)
       getFiles()
     } catch {
-      model.status = error.localizedDescription
+      model.status.msg = error.localizedDescription
     }
   }
   
@@ -105,10 +99,10 @@ class RepoHandler: ObservableObject {
   func discardChanges(_ paths: [String], _ msg: String? = nil) {
     func fn(_ paths: [String]) {
       do {
-        try repo!.discardChanges(in: paths)
+        try model.repo!.discardChanges(in: paths)
         getFiles()
       } catch {
-        model.status = error.localizedDescription
+        model.status.msg = error.localizedDescription
       }
     }
     
@@ -144,17 +138,17 @@ class RepoHandler: ObservableObject {
   
   func pull() {
     do {
-      try repo!.pull(options: .default)
+      try model.repo!.pull(options: .default)
     } catch {
-      model.status = error.localizedDescription
+      model.status.msg = error.localizedDescription
     }
   }
   
   func push() {
     do {
-      try repo!.push(options: .default)
+      try model.repo!.push(options: .default)
     } catch {
-      model.status = error.localizedDescription
+      model.status.msg = error.localizedDescription
     }
   }
 }

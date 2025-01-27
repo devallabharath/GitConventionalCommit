@@ -1,7 +1,14 @@
 import SwiftUI
 import Git
 
+enum AppMode {
+  case open
+  case normal
+  case commit
+}
+
 enum CommitType: String, CaseIterable {
+  case none = "Type: None"
   case feat = "Feat"
   case fix = "Fix"
   case docs = "Docs"
@@ -16,7 +23,7 @@ enum CommitType: String, CaseIterable {
 }
 
 enum CommitScope: String, CaseIterable, Identifiable {
-  case none = "None"
+  case none = "Scope: None"
   case ini = "Init"
   case new = "New"
   case idea = "Idea"
@@ -194,4 +201,33 @@ enum FileOperation {
   case untrack
   case stash
   case discard
+}
+
+enum StatusType {
+  case none
+  case success
+  case warning
+  case error
+}
+
+struct Status {
+  var msg: String = ""
+  var type: StatusType = .none
+  
+  var icon: String {
+    switch type {
+      case .none:
+        return ""
+      case .success:
+        return "checkmark.circle.fill"
+      case .warning:
+        return "exclamationmark.circle.fill"
+      case .error:
+        return "xmark.circle.fill"
+    }
+  }
+  
+  mutating func clear() {
+    msg = ""
+  }
 }

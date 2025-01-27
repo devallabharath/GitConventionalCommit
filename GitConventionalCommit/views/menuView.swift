@@ -5,7 +5,7 @@ struct MenuView: View {
   @EnvironmentObject var repo: RepoHandler
   
   var body: some View {
-    Menu("", systemImage: "ellipsis.rectangle.fill") {
+    Menu("", systemImage: "ellipsis") {
       // Repo menu
       Section("Repo") {
         Button("Pull", action: repo.pull)
@@ -40,8 +40,7 @@ struct MenuView: View {
       }
     }
     .menuIndicator(.hidden)
-    .menuStyle(.borderlessButton)
-    .frame(width: 20, height: 20, alignment: .center)
+    .menuStyle(.button)
     .font(.system(size: 20))
   }
 }

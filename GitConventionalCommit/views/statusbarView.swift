@@ -1,24 +1,28 @@
 import SwiftUI
 
 struct StatusbarView: View {
+  @Environment(\.colorScheme) var theme
   @EnvironmentObject var model: DataModel
 
   var body: some View {
     HStack(alignment: .center, spacing: 2) {
-      if !model.status.isEmpty {
-        Button("", systemImage: "xmark.circle") { model.status = "" }
+      if !model.status.msg.isEmpty {
+        Button("", systemImage: model.status.icon) { model.status.clear() }
           .buttonStyle(.plain)
       }
-      Text(model.status)
+      Text(model.status.msg)
       Spacer()
-      HStack {
-        Button("Cancel", action: model.quit)
-          .frame(height: 25).cornerRadius(4)
-        Button("Commit", action: model.commit)
-          .frame(height: 25).cornerRadius(4)
+      if model.mode == .commit {
+        HStack {
+          Button("Cancel", action: model.quit)
+          Button("Commit", action: model.commit)
+            .buttonStyle(.borderedProminent)
+        }
       }
     }
     .padding(.horizontal, 10)
-    .background(Color("morebg"))
+    .padding(.vertical, 3)
+    .background(.background.opacity(1))
+//    .background(Color("gray").opacity(0.1))
   }
 }
