@@ -4,7 +4,7 @@ struct EditorView: View {
   @EnvironmentObject var model: DataModel
   
   var body: some View {
-    TextEditor(text: $model.cMsg)
+    TextEditor(text: $model.commit.msg)
       .scrollContentBackground(.hidden)
       .font(.system(size: 12))
       .monospaced(true)

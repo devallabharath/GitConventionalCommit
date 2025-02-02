@@ -7,24 +7,34 @@ struct SidebarView: View {
   @EnvironmentObject var repo: RepoHandler
   
   var body: some View {
-    VStack(spacing: 0){
+    VStack(alignment: .leading, spacing: 0) {
       if model.loading {
-        ProgressView()
+        ProgressView().controlSize(.small)
       } else {
-        List(selection: $selected) {
-          SectionView(.staged)
-          SectionView(.unstaged)
-          SectionView(.untracked)
-        }
-        .contextMenu(forSelectionType: UUID.self) { ids in
-          Button("Diff") { handleSelection(ids, .diff) }
-          Divider()
-          Button("Stage") { handleSelection(ids, .stage) }
-          Button("UnStage") { handleSelection(ids, .unstage) }
-          Divider()
-          Button("UnTrack") { handleSelection(ids, .untrack) }
-          Button("Stash") { handleSelection(ids, .stash) }
-          Button("Discard") { handleSelection(ids, .discard) }
+        if model.AppMode == .commit {
+          Text("Files being commited")
+            .font(.headline)
+            .lineLimit(1)
+            .padding(.horizontal, 10)
+          List {
+            ForEach(model.files.staged) { file in FileView(file) }
+          }
+        } else {
+          List(selection: $selected) {
+            SectionView(.staged)
+            SectionView(.unstaged)
+            SectionView(.untracked)
+          }
+          .contextMenu(forSelectionType: UUID.self) { ids in
+            Button("Diff") { handleSelection(ids, .diff) }
+            Divider()
+            Button("Stage") { handleSelection(ids, .stage) }
+            Button("UnStage") { handleSelection(ids, .unstage) }
+            Divider()
+            Button("UnTrack") { handleSelection(ids, .untrack) }
+            Button("Stash") { handleSelection(ids, .stash) }
+            Button("Discard") { handleSelection(ids, .discard) }
+          }
         }
       }
     }
@@ -33,11 +43,10 @@ struct SidebarView: View {
   }
   
   func HeaderView() -> some View {
-    HStack(spacing: 5) {
-      if let name = repo.branchName() {
-        Text(name)
-      }
-      Text(repo.branchStatus())
+    let (name, stats) = repo.getBranchInfo()
+    return HStack(spacing: 5) {
+      Text(name)
+      Text(stats)
         .font(.system(size: 10))
       Spacer()
     }
@@ -54,28 +63,38 @@ struct SidebarView: View {
     }
     .help(file.path)
     .font(.system(size: 11))
+//    .monospaced()
   }
   
   func SectionView(_ type: FileType) -> some View {
-    var files: [File]
+    let files: [File]
     switch type {
       case .staged: files = model.files.staged
       case .unstaged: files = model.files.unstaged
-      default: files = model.files.untracked
+      case .untracked: files = model.files.untracked
     }
-    
     return Section("\(type.rawValue): \(files.count)") {
-      ForEach(files) { file in
+      ForEach(files, id: (\.id)) { file in
         FileView(file).tag(file.id)
       }
     }
+    .sectionActions(content: {
+      let icon = type == .staged ? "minus.square.fill" : "plus.square.fill"
+      Button("", systemImage: icon) {
+        switch type {
+          case .staged: repo.unStageAll()
+          case .unstaged: repo.stageByType(.unstaged)
+          case .untracked: repo.stageByType(.untracked)
+        }
+      }
+    })
   }
   
   func handleSelection(_ ids: Set<UUID>, _ opeartion: FileOperation) {
     let combined: [File]
     
     func filtered() -> [String] {
-      combined.filter({ids.contains($0.id)}).map({$0.path})
+      combined.filter({ids.contains($0.id)}).map(\.path)
     }
     
     switch opeartion {
@@ -87,7 +106,6 @@ struct SidebarView: View {
         repo.unStage(filtered())
       case .discard:
         combined = model.files.staged + model.files.unstaged + model.files.untracked
-        repo.discardChanges(filtered())
       default: combined = model.files.staged
     }
   }

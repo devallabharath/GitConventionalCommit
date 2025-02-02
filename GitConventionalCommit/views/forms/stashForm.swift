@@ -3,7 +3,7 @@ import SwiftUI
 struct StashForm: View {
   @Environment(\.dismiss) private var dismiss
   @State private var value: String = ""
-  var ids: [UUID]
+  var ids: [UUID] = []
   
   var body: some View {
     VStack(spacing: 10) {

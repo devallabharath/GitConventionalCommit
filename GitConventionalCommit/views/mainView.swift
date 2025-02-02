@@ -1,9 +1,9 @@
 import SwiftUI
 
 private struct ViewMode: View {
-  var mode: AppMode
+  var mode: ApplicationMode
   
-  init(_ mode: AppMode) { self.mode = mode }
+  init(_ mode: ApplicationMode) { self.mode = mode }
   
   var body: some View {
     switch mode {
@@ -16,30 +16,43 @@ private struct ViewMode: View {
 
 struct MainView: View {
   @EnvironmentObject var model: DataModel
+  @EnvironmentObject var repo: RepoHandler
   
   var body: some View {
-    ViewMode(model.mode)
+    ViewMode(model.AppMode)
     // Dialog
     .foregroundColor(Color("fg"))
-    .confirmationDialog(model.dialog.title, isPresented: $model.dialog.visible) {
-      Button(model.dialog.actionTitle, role: model.dialog.actionRole ?? .none) {
-        model.dialog.action()
-        model.dialog.visible = false
+    .confirmationDialog(
+      model.AppDialog.title,
+      isPresented: $model.AppDialog.visible
+    ) {
+      Button(
+        model.AppDialog.actionTitle,
+        role: model.AppDialog.actionRole ?? .none
+      ) {
+        model.AppDialog.action()
+        model.AppDialog.visible = false
       }
     } message: {
-      Text(model.dialog.message)
+      Text(model.AppDialog.message)
     }
-    .dialogSeverity(model.dialog.severity)
-    .dialogIcon(Image(systemName: model.dialog.icon))
+    .dialogSeverity(model.AppDialog.severity)
+    .dialogIcon(Image(systemName: model.AppDialog.icon))
+    .sheet(isPresented: $model.AppModal.visible) { ModalView() }
     // Import Folder
     .fileImporter(
       isPresented: $model.importing,
       allowedContentTypes: [.folder],
       onCompletion: {result in
         do {
-          model.chooseRepo(try result.get())
+          repo.chooseRepo(try result.get())
         } catch {
-          model.cMsg = error.localizedDescription
+          model.setError(
+            title: "Open Repository Error",
+            body: error.localizedDescription,
+            status: "Unable to open the selected folder...",
+            kind: .error
+          )
         }
       }
     )

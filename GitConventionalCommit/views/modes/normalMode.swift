@@ -2,12 +2,11 @@ import SwiftUI
 
 struct NormalMode: View {
   @Environment(\.colorScheme) var theme
+  @EnvironmentObject var model: DataModel
   
   var body: some View {
     NavigationSplitView(
-      sidebar: {
-        SidebarView()
-      },
+      sidebar: { SidebarView() },
       detail: {
         VStack(spacing: 0) {
           LogView()
@@ -15,12 +14,7 @@ struct NormalMode: View {
         }
         .frame(minWidth: 450, minHeight: 200)
         .background(theme == .dark ? Color.clear : Color.gray.opacity(0.1))
-        .toolbar {
-          ToolbarItem(placement: .automatic){MenuView()}
-          ToolbarItem(placement: .automatic){
-            Button("Log", systemImage: "text.page.fill", action: {})
-          }
-        }
+        .toolbar {ToolBar()}
       }
     )
     .controlSize(.regular)

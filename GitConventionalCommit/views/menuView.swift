@@ -5,17 +5,19 @@ struct MenuView: View {
   @EnvironmentObject var repo: RepoHandler
   
   var body: some View {
-    Menu("", systemImage: "ellipsis") {
+    Menu("Menu", systemImage: "ellipsis") {
       // Repo menu
       Section("Repo") {
+        Button("Open", action: { model.AppMode = .open })
+        Button("Refresh", action: repo.refresh)
         Button("Pull", action: repo.pull)
         Button("Push", action: repo.push)
       }
       // status menu
       Section("Files") {
         Menu("Stage") {
-          Button("Stage UnStaged", action: repo.stageUnstaged)
-          Button("Stage Untracked", action: repo.stageAll)
+          Button("Stage UnStaged", action: {repo.stageByType(.unstaged)})
+          Button("Stage Untracked", action: {repo.stageByType(.untracked)})
           Button("Stage All", action: repo.stageAll)
         }
         Button("UnStage All", action: repo.unStageAll)
@@ -28,14 +30,13 @@ struct MenuView: View {
       }
       Section("Harmfull") {
         Menu("Discard Changes") {
-          Button("Discard Staged", action: repo.discardStaged)
-          Button("Discard Unstaged", action: repo.discardUnstaged)
+          Button("Discard Staged", action: {repo.discardByType(.staged)})
+          Button("Discard Unstaged", action: {repo.discardByType(.unstaged)})
           Button("Discard All", action: repo.discardAll)
         }
       }
       // App menu
       Section("App") {
-        Button("Refresh", action: repo.refresh)
         Button("Quit", action: model.quit)
       }
     }

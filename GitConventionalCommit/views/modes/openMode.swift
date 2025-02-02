@@ -3,6 +3,7 @@ import SwiftUI
 struct OpenMode: View {
   @Environment(\.colorScheme) var theme
   @EnvironmentObject var model: DataModel
+  @EnvironmentObject var repo: RepoHandler
   @State private var selected: UUID?
   
   var body: some View {
@@ -10,13 +11,15 @@ struct OpenMode: View {
       mainContent
       recentsView
     }
-    .frame(width: 740, height: 432)
+//    .ignoresSafeArea(.all, edges: .top)
+    .frame(width: 740, height: 435)
     .onAppear {
       let win = NSApp.windows.first!
       win.isMovableByWindowBackground = true
       win.standardWindowButton(.closeButton)?.isEnabled = true
       win.standardWindowButton(.zoomButton)?.isEnabled = false
       win.standardWindowButton(.miniaturizeButton)?.isEnabled = true
+//      model.clearRecents()
     }
     .onDrop(of: [.fileURL], isTargeted: .constant(true)) { providers, _ in
       _ = providers.first!
@@ -25,7 +28,7 @@ struct OpenMode: View {
              let url = URL(dataRepresentation: data, relativeTo: nil) {
             print(url.path)
             Task {
-              await model.chooseRepo(url)
+              await repo.chooseRepo(url)
             }
         }
       }
@@ -35,46 +38,49 @@ struct OpenMode: View {
   
   private var mainContent: some View {
     VStack(spacing: 0) {
-      Spacer().frame(height: 32)
+      Spacer().frame(height: 36)
       ZStack {
         if theme == .dark {
           Rectangle()
             .frame(width: 104, height: 104)
-            .foregroundColor(.accentColor)
+            .foregroundColor(.white)
             .clipShape(RoundedRectangle(cornerRadius: 24))
             .blur(radius: 64)
-            .opacity(0.5)
+            .opacity(0.4)
         }
         Image(nsImage: NSApp.applicationIconImage)
           .resizable()
           .frame(width: 128, height: 128)
       }
-      Text(NSLocalizedString("GitCC", comment: ""))
-        .font(.system(size: 36, weight: .bold))
+      Text("Git Conventional Commit")
+        .font(.system(size: 20, weight: .bold))
+      Text("Version 0.0.6")
+        .monospaced()
+        .font(.system(size: 10, weight: .light))
       .help("Copy System Information to Clipboard")
       
       Spacer().frame(height: 40)
-      HStack {
-        VStack(alignment: .center, spacing: 8) {
-          Button("Open Directory", action: {
-            model.importing.toggle()
-          }).buttonStyle(.borderedProminent).controlSize(.large)
-          Button("Quit", action: {
-            NSApp.terminate(nil)
-          })
-          .controlSize(.large)
-        }
+      VStack(alignment: .center, spacing: 8) {
+        Button("Open Directory", action: {
+          model.importing.toggle()
+        }).buttonStyle(.borderedProminent).controlSize(.large)
+        Button("Quit", action: {
+          NSApp.terminate(nil)
+        })
+        .controlSize(.large)
       }
       Spacer()
-      Text(model.AppMsg)
+      Text(model.AppStatus.status)
         .foregroundStyle(.red)
         .font(.caption)
+        .lineLimit(1)
         .italic()
         .padding()
+        .onTapGesture { model.AppModal.show(.error) }
     }
-    .padding(.top, 20)
+    .padding(.top, 32)
     .padding(.horizontal, 56)
-    .padding(.bottom, 16)
+//    .padding(.bottom, 16)
     .frame(width: 460)
     .background(theme == .dark ? Color.black.opacity(0.3) : Color.white.opacity(0.5))
   }
@@ -82,6 +88,7 @@ struct OpenMode: View {
   private func recentFolder(_ path: String) -> some View {
     HStack(spacing: 8) {
       Label("", systemImage: "folder.fill")
+        .font(.system(size: 16))
         .frame(width: 32, height: 32)
       VStack(alignment: .leading) {
         Text(path.split(separator: "/").last ?? "??")
@@ -99,31 +106,23 @@ struct OpenMode: View {
     .frame(height: 36)
     .contentShape(Rectangle())
     .onTapGesture {
-      model.chooseRepo(URL(fileURLWithPath: path))
+      repo.chooseRepo(URL(fileURLWithPath: path))
     }
   }
   
   private var recentsView: some View {
-    VStack(alignment: .leading, spacing: 6) {
-      HStack {
-        Text("Recents")
-          .font(.headline)
-        Spacer()
-        Button("Clear") {model.clearRecents()}
-          .buttonStyle(.link)
-      }
-      if model.recents.isEmpty {
-        Text(NSLocalizedString("No Recent Projects", comment: ""))
+    List {
+      if model.AppRecents.isEmpty {
+        Text("No Recent Projects")
           .font(.body)
           .foregroundColor(.secondary)
       } else {
-        ForEach(model.recents.reversed(), id: \.self) { path in
+        ForEach(model.AppRecents.reversed(), id: \.self) { path in
           recentFolder(path)
         }
       }
-      Spacer()
     }
-    .padding()
+    .listStyle(.sidebar)
     .frame(width: 280)
   }
 }
