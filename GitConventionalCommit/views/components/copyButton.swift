@@ -4,9 +4,9 @@ struct CopyButton: View {
   private let str: String
   @State private var hovering = false
   @State private var isCopied = false
-  
+
   init(_ str: String) { self.str = str }
-  
+
   var body: some View {
     Button(
       str,
@@ -23,6 +23,6 @@ struct CopyButton: View {
     .buttonStyle(.plain)
     .help("Copy")
     .foregroundColor(Color("fg").opacity(hovering ? 1 : 0.8))
-    .onHover { hovering in self.hovering = hovering}
+    .onHover { hovering in self.hovering = hovering }
   }
 }

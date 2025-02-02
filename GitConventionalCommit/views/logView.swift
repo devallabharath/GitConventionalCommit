@@ -1,10 +1,10 @@
-import SwiftUI
 import Git
+import SwiftUI
 
 struct LogView: View {
   @EnvironmentObject var model: DataModel
   @EnvironmentObject var repo: RepoHandler
-  
+
   var body: some View {
     List(model.logs, id: \.shortHash) { log in
       Section(
@@ -15,9 +15,9 @@ struct LogView: View {
       .listRowSeparator(.hidden)
     }
     .scrollContentBackground(.hidden)
-    .onAppear {repo.getLogs()}
+    .onAppear { repo.getLogs() }
   }
-  
+
   private func LogBody(_ log: any RepositoryLogRecord) -> some View {
     VStack(alignment: .leading, spacing: 0) {
       VStack(alignment: .leading) {
@@ -38,7 +38,7 @@ struct LogView: View {
     .font(.body)
     .textSelection(.enabled)
   }
-  
+
   private func LogHeader(_ log: any RepositoryLogRecord) -> some View {
     HStack(alignment: .center, spacing: 5) {
       CopyButton(log.shortHash)
@@ -58,7 +58,7 @@ struct LogView: View {
             systemImage: "checkmark.icloud"
           )
         }
-        
+
         if !tags.isEmpty {
           ForEach(tags, id: \.self) { tag in
             Text(" \(tag) ")
@@ -71,9 +71,8 @@ struct LogView: View {
     }
     .font(.subheadline)
   }
-  
-  func parseNames(_ names: String) ->
-    ([String], [String], [String]) {
+
+  func parseNames(_ names: String) -> ([String], [String], [String]) {
     var locals: [String] = []
     var remotes: [String] = []
     var tags: [String] = []
@@ -89,7 +88,7 @@ struct LogView: View {
         locals.append(String(name).trimmingCharacters(in: .whitespaces))
       }
     }
-    
+
     return (locals, remotes, tags)
   }
 }

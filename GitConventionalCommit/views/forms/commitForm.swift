@@ -4,7 +4,7 @@ struct CommitForm: View {
   @Environment(\.dismiss) private var dismiss
   @EnvironmentObject var Model: DataModel
   @EnvironmentObject var Repo: RepoHandler
-  
+
   var body: some View {
     VStack(alignment: .center, spacing: 10) {
       CommitOptions
@@ -15,7 +15,7 @@ struct CommitForm: View {
     .font(.system(size: 13))
     .frame(width: 500)
   }
-  
+
   private var CommitOptions: some View {
     HStack(spacing: 10) {
       // Commit Mode
@@ -42,7 +42,7 @@ struct CommitForm: View {
       .disabled([.typeOnly, .none].contains(Model.commit.mode))
     }
   }
-  
+
   private var CommitSubject: some View {
     HStack(spacing: 8) {
       Text("Subject")
@@ -50,7 +50,7 @@ struct CommitForm: View {
     }
     .monospaced()
   }
-  
+
   private var CommitBody: some View {
     HStack(alignment: .top, spacing: 8) {
       Text("Body   ")
@@ -59,23 +59,25 @@ struct CommitForm: View {
     .monospaced()
     .frame(height: 120)
   }
-  
+
   private var Buttons: some View {
     HStack(spacing: 20) {
-      Button("Cancel", action: {dismiss()})
-      Button("Commit", action: {
-        let success = Repo.commit()
-        if success {
-          Model.commit.subject = ""
-          Model.commit.body = ""
-          Repo.refresh()
+      Button("Cancel", action: { dismiss() })
+      Button(
+        "Commit",
+        action: {
+          let success = Repo.commit()
+          if success {
+            Model.commit.subject = ""
+            Model.commit.body = ""
+            Repo.refresh()
+          }
+          dismiss()
         }
-        dismiss()
-      })
-        .buttonStyle(.borderedProminent)
+      )
+      .buttonStyle(.borderedProminent)
     }
     .controlSize(.small)
     .frame(maxWidth: .infinity)
   }
 }
-

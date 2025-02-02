@@ -3,7 +3,7 @@ import SwiftUI
 struct ErrorView: View {
   @Environment(\.dismiss) var dismiss
   @EnvironmentObject var model: DataModel
-  
+
   var body: some View {
     VStack {
       Text(model.AppError.title)

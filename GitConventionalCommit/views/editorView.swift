@@ -2,7 +2,7 @@ import SwiftUI
 
 struct EditorView: View {
   @EnvironmentObject var model: DataModel
-  
+
   var body: some View {
     TextEditor(text: $model.commit.msg)
       .scrollContentBackground(.hidden)

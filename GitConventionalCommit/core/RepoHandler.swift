@@ -5,7 +5,7 @@ class RepoHandler: ObservableObject {
   var model: DataModel
 
   init(_ model: DataModel) { self.model = model }
-  
+
   func getBranchInfo() -> (String, String) {
     let name = try? model.repo?.listReferences().currentReference?.name.shortName
     return (name ?? "Branch", "")
@@ -69,7 +69,7 @@ class RepoHandler: ObservableObject {
     }
     getFiles()
   }
-  
+
   func chooseRepo(_ dir: URL) {
     model.AppError.clear()
     model.AppStatus.clear()
@@ -123,9 +123,10 @@ class RepoHandler: ObservableObject {
       message: "Everything will be STAGED including untracked.",
       actionTitle: "Stage",
       action: {
-        let paths = self.model.files.unstaged.map(
-          \.path
-        ) + self.model.files.untracked.map(\.path)
+        let paths =
+          self.model.files.unstaged.map(
+            \.path
+          ) + self.model.files.untracked.map(\.path)
         self.stage(paths)
       },
       severity: .standard
@@ -196,7 +197,7 @@ class RepoHandler: ObservableObject {
       "Everything will be DISCARDED"
     )
   }
-  
+
   func commit() -> Bool {
     if model.AppMode != .commit {
       let options = GitCommitOptions(message: model.commit.parseCommit())
@@ -213,7 +214,7 @@ class RepoHandler: ObservableObject {
         return false
       }
     }
-    
+
     if let (body, status) = model.commit.writeCommitFile() {
       model.setError(
         title: "Commit Error",
@@ -226,7 +227,7 @@ class RepoHandler: ObservableObject {
       NSApp.terminate(nil)
       return true
     }
-    
+
   }
 
   func pull() {

@@ -15,11 +15,11 @@ struct GitConventionalCommitApp: App {
   @StateObject var model = DataModel()
 
   var body: some Scene {
-    Window ("GitCC", id: "mainwin"){ MainView() }
-    // Evironment
-    .environmentObject(model)
-    .environmentObject(RepoHandler(model))
-    .windowResizability(.contentSize)
-    .windowToolbarStyle(.expanded)
+    Window("GitCC", id: "mainwin") { MainView() }
+      // Evironment
+      .environmentObject(model)
+      .environmentObject(RepoHandler(model))
+      .windowResizability(.contentSize)
+      .windowToolbarStyle(.expanded)
   }
 }

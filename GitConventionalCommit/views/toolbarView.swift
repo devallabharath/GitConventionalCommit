@@ -2,9 +2,9 @@ import SwiftUI
 
 struct ToolBar: ToolbarContent {
   @EnvironmentObject var Repo: RepoHandler
-  
+
   var body: some ToolbarContent {
-    ToolbarItem(placement: .automatic){MenuView()}
+    ToolbarItem(placement: .automatic) { MenuView() }
     ToolbarItem {
       Button(
         "Refresh",
@@ -31,9 +31,9 @@ struct ToolBar: ToolbarContent {
       Button("Settings", systemImage: "gearshape.fill", action: {})
     }
     ToolbarItem {
-      Button("Quit", systemImage: "rectangle.portrait.and.arrow.right.fill", action: Repo.model.quit)
+      Button(
+        "Quit", systemImage: "rectangle.portrait.and.arrow.right.fill", action: Repo.model.quit)
     }
-    ToolbarItem(placement: .automatic){ Spacer() }
+    ToolbarItem(placement: .automatic) { Spacer() }
   }
 }
-

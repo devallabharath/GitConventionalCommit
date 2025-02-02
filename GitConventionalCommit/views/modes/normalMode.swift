@@ -3,7 +3,7 @@ import SwiftUI
 struct NormalMode: View {
   @Environment(\.colorScheme) var theme
   @EnvironmentObject var model: DataModel
-  
+
   var body: some View {
     NavigationSplitView(
       sidebar: { SidebarView() },
@@ -14,7 +14,7 @@ struct NormalMode: View {
         }
         .frame(minWidth: 450, minHeight: 200)
         .background(theme == .dark ? Color.clear : Color.gray.opacity(0.1))
-        .toolbar {ToolBar()}
+        .toolbar { ToolBar() }
       }
     )
     .controlSize(.regular)

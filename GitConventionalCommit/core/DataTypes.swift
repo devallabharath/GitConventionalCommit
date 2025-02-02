@@ -1,5 +1,5 @@
-import SwiftUI
 import Git
+import SwiftUI
 
 enum ApplicationMode {
   case open
@@ -16,9 +16,9 @@ struct ApplicationDialog {
   private(set) var action: () -> Void = {}
   private(set) var actionRole: ButtonRole? = nil
   private(set) var severity: DialogSeverity = .automatic
-  
+
   mutating func toggle() { self.visible.toggle() }
-  
+
   mutating func show(
     title: String = "Are you sure?",
     icon: String = "questionmark.app.fill",
@@ -42,7 +42,7 @@ struct ApplicationDialog {
 struct ApplicationModal {
   var visible: Bool = false
   private(set) var mode: ApplicationModalMode = .error
-  
+
   mutating func show(_ mode: ApplicationModalMode) {
     self.mode = mode
     self.visible = true
@@ -59,13 +59,13 @@ class ApplicationError {
   private(set) var hasError: Bool = false
   private(set) var title: String = "Error"
   private(set) var body: String = ""
-  
+
   func set(title: String = "Error", body: String = "") {
     self.title = title
     self.body = body
     self.hasError = true
   }
-  
+
   func clear() {
     self.title = "Error"
     self.body = ""
@@ -76,29 +76,29 @@ class ApplicationError {
 struct ApplicationStatus {
   private(set) var status: String = ""
   private(set) var kind: ApplicationStatusKind = .none
-  
+
   var color: Color {
     switch kind {
-      case .none: return .fg
-      case .success: return .cgreen
-      case .warning: return .cyellow
-      case .error: return .cred
+    case .none: return .fg
+    case .success: return .cgreen
+    case .warning: return .cyellow
+    case .error: return .cred
     }
   }
   var icon: String {
     switch kind {
-      case .none: return ""
-      case .success: return "checkmark.circle.fill"
-      case .warning: return "exclamationmark.circle.fill"
-      case .error: return "xmark.circle.fill"
+    case .none: return ""
+    case .success: return "checkmark.circle.fill"
+    case .warning: return "exclamationmark.circle.fill"
+    case .error: return "xmark.circle.fill"
     }
   }
-  
+
   mutating func set(msg: String, kind: ApplicationStatusKind = .none) {
     self.status = msg
     self.kind = kind
   }
-  
+
   mutating func clear() {
     self.status = ""
     self.kind = .none
@@ -122,40 +122,40 @@ class CommitState {
   var mode: ConventionalMode = .both
   var type: CommitType = .feat
   var scope: CommitScope = .new
-  
+
   func parsePrefix() -> String {
     var prefix: String
     switch mode {
-      case .both: prefix = "\(type.rawValue): \(scope.icon) "
-      case .none: prefix = ""
-      case .typeOnly: prefix = "\(type.rawValue): "
-      case .scopeOnly: prefix = "\(scope.icon) "
+    case .both: prefix = "\(type.rawValue): \(scope.icon) "
+    case .none: prefix = ""
+    case .typeOnly: prefix = "\(type.rawValue): "
+    case .scopeOnly: prefix = "\(scope.icon) "
     }
-    
+
     return prefix
   }
-  
+
   func parseMsg() -> String? {
     let msg = msg.trimmingCharacters(in: .whitespacesAndNewlines)
     if msg.isEmpty { return nil }
-    
+
     var parsed: String = parsePrefix()
     let lines = msg.split(separator: "\n")
-    
+
     for line in lines {
       let l = line.trimmingCharacters(in: .whitespaces)
-      if (l.count > 0 && l.first != "#") {
+      if l.count > 0 && l.first != "#" {
         parsed += "\(line)\n"
       }
     }
-    
+
     return parsed
   }
-  
+
   func parseCommit() -> String { "\(parsePrefix())\(subject)\n\n\(body)" }
-  
+
   func readCommitFile() -> (String, String)? {
-    if (url == nil) {
+    if url == nil {
       return (
         "No commit file",
         "There is no commit file to read..."
@@ -169,21 +169,25 @@ class CommitState {
       } catch {
         return (
           "Error while reading Commit file...",
-          "url: \(url!.path)\n\(error)")
+          "url: \(url!.path)\n\(error)"
+        )
       }
     } else {
       return (
         "No Commit file at url...",
-        "No file found at \(url!.path)")
+        "No file found at \(url!.path)"
+      )
     }
   }
-  
+
   func writeCommitFile() -> (String, String)? {
     let commitMsg = parseMsg()
-    if commitMsg == nil {return (
-      "Commit Msg cannnot be empty...",
-      "Commit Msg cannnot be empty..."
-    )}
+    if commitMsg == nil {
+      return (
+        "Commit Msg cannnot be empty...",
+        "Commit Msg cannnot be empty..."
+      )
+    }
     do {
       try commitMsg!.write(toFile: url!.path, atomically: true, encoding: .utf8)
       return nil
@@ -240,9 +244,9 @@ enum CommitScope: String, CaseIterable, Identifiable {
   case deliver = "Delevery"
   case deploy = "Deploy"
   case revert = "Revert"
-  
-  var id: Self {self}
-  var icon: String {UnicodeIcons[self]!}
+
+  var id: Self { self }
+  var icon: String { UnicodeIcons[self]! }
 }
 
 var UnicodeIcons: [CommitScope: String] = [
@@ -256,7 +260,7 @@ var UnicodeIcons: [CommitScope: String] = [
   .edit: "✏️",
   .work: "🚧",
   .done: "✅",
-  .bug : "🐛",
+  .bug: "🐛",
   .doc: "📝",
   .access: "♿️",
   .style: "💄",
@@ -267,7 +271,7 @@ var UnicodeIcons: [CommitScope: String] = [
   .package: "📦",
   .deliver: "🚚",
   .deploy: "🚀",
-  .revert: "⏪"
+  .revert: "⏪",
 ]
 
 struct File: Identifiable {
@@ -277,7 +281,7 @@ struct File: Identifiable {
   let state: GitFileStatus.State
   let hasChangesInIndex: Bool
   let hasChangesInWorktree: Bool
-  
+
   init(_ file: GitFileStatus, _ type: FileType) {
     self.type = type
     self.path = file.path
@@ -285,58 +289,58 @@ struct File: Identifiable {
     self.hasChangesInIndex = file.hasChangesInIndex
     self.hasChangesInWorktree = file.hasChangesInWorktree
   }
-  
+
   var name: String {
     let parts = path.components(separatedBy: "/")
     let last = parts.last
     switch last {
-      case nil:
-        return path
-      case "":
-        return parts.dropFirst(parts.count-2).joined(separator: "")
-      default:
-        return last!
+    case nil:
+      return path
+    case "":
+      return parts.dropFirst(parts.count - 2).joined(separator: "")
+    default:
+      return last!
     }
   }
-  
+
   var symbol: String {
-    let s = type == .staged ? state.index: state.worktree
+    let s = type == .staged ? state.index : state.worktree
     switch s {
-      case .added:
-        return "A"
-      case .deleted:
-        return "D"
-      case .modified:
-        return "M"
-      case .renamed:
-        return "R"
-      case .ignored:
-        return "·"
-      case .unknown:
-        return "?"
-      default:
-        return ""
+    case .added:
+      return "A"
+    case .deleted:
+      return "D"
+    case .modified:
+      return "M"
+    case .renamed:
+      return "R"
+    case .ignored:
+      return "·"
+    case .unknown:
+      return "?"
+    default:
+      return ""
     }
   }
-  
+
   var color: Color {
-    let s = type == .staged ? state.index: state.worktree
+    let s = type == .staged ? state.index : state.worktree
     switch s {
-      case .added:
-        return Color("Cgreen")
-      case .deleted:
-        return Color("Cred")
-      case .modified:
-        return Color("Cyellow")
-      case .renamed:
-        return Color("Cblue")
-      case .ignored:
-        return Color("Cgray")
-      default:
-        return Color("fg")
+    case .added:
+      return Color("Cgreen")
+    case .deleted:
+      return Color("Cred")
+    case .modified:
+      return Color("Cyellow")
+    case .renamed:
+      return Color("Cblue")
+    case .ignored:
+      return Color("Cgray")
+    default:
+      return Color("fg")
     }
   }
-  
+
   var icon: String {
     if path.hasSuffix("/") {
       return "folder.fill"
