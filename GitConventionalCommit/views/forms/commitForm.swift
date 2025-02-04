@@ -54,7 +54,7 @@ struct CommitForm: View {
   private var CommitBody: some View {
     HStack(alignment: .top, spacing: 8) {
       Text("Body   ")
-      TextEditor(text: $Model.commit.body)
+      Editor($Model.commit.body)
     }
     .monospaced()
     .frame(height: 120)
@@ -62,9 +62,9 @@ struct CommitForm: View {
 
   private var Buttons: some View {
     HStack(spacing: 20) {
-      Button("Cancel", action: { dismiss() })
-      Button(
-        "Commit",
+      TextButton("Cancel", action: { dismiss() })
+      TextButton(
+        "Commit", .primary,
         action: {
           let success = Repo.commit()
           if success {
@@ -75,7 +75,6 @@ struct CommitForm: View {
           dismiss()
         }
       )
-      .buttonStyle(.borderedProminent)
     }
     .controlSize(.small)
     .frame(maxWidth: .infinity)

@@ -1,24 +1,25 @@
 import SwiftUI
 
 struct StatusbarView: View {
-  @EnvironmentObject var model: DataModel
+  @EnvironmentObject var Model: DataModel
 
   var body: some View {
     HStack(spacing: 2) {
-      if model.AppStatus.status.isEmpty {
+      if Model.AppStatus.status.isEmpty {
         EmptyView()
       } else {
-        Label(model.AppStatus.status, systemImage: model.AppStatus.icon)
-          .foregroundColor(model.AppStatus.color)
+        Label(Model.AppStatus.status, systemImage: Model.AppStatus.icon)
+          .font(.system(size: 11))
+          .foregroundColor(Model.AppStatus.color)
           .lineLimit(1)
-          .onTapGesture { model.AppModal.show(.error) }
+          .onTapGesture { Model.AppModal.show(.error) }
         Spacer()
       }
     }
     .padding(.horizontal, 10)
     .padding(.vertical, 3)
-    .frame(height: 25)
+    .frame(height: 22)
     .frame(maxWidth: .infinity)
-    .background(.background)
+    .background(.morebg)
   }
 }

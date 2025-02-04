@@ -2,16 +2,14 @@ import SwiftUI
 
 struct OpenMode: View {
   @Environment(\.colorScheme) var theme
-  @EnvironmentObject var model: DataModel
-  @EnvironmentObject var repo: RepoHandler
-  @State private var selected: UUID?
+  @EnvironmentObject var Model: DataModel
+  @EnvironmentObject var Repo: RepoHandler
 
   var body: some View {
     HStack(spacing: 0) {
       mainContent
       recentsView
     }
-    //    .ignoresSafeArea(.all, edges: .top)
     .frame(width: 740, height: 435)
     .onAppear {
       let win = NSApp.windows.first!
@@ -19,7 +17,6 @@ struct OpenMode: View {
       win.standardWindowButton(.closeButton)?.isEnabled = true
       win.standardWindowButton(.zoomButton)?.isEnabled = false
       win.standardWindowButton(.miniaturizeButton)?.isEnabled = true
-      //      model.clearRecents()
     }
     .onDrop(of: [.fileURL], isTargeted: .constant(true)) { providers, _ in
       _ = providers.first!
@@ -27,10 +24,7 @@ struct OpenMode: View {
           if let data,
             let url = URL(dataRepresentation: data, relativeTo: nil)
           {
-            print(url.path)
-            Task {
-              await repo.chooseRepo(url)
-            }
+            DispatchQueue.main.async { self.Repo.chooseRepo(url) }
           }
         }
       return true
@@ -62,74 +56,83 @@ struct OpenMode: View {
 
       Spacer().frame(height: 40)
       VStack(alignment: .center, spacing: 8) {
-        Button(
-          "Open Directory",
-          action: {
-            model.importing.toggle()
-          }
-        ).buttonStyle(.borderedProminent).controlSize(.large)
-        Button(
-          "Quit",
-          action: {
-            NSApp.terminate(nil)
-          }
+        TextButton(
+          "Open", .primary, width: 180,
+          action: { Repo.chooseRepo() }
         )
-        .controlSize(.large)
+        TextButton(
+          "Quit", .destructive, width: 180,
+          action: Model.quit
+        )
       }
       Spacer()
-      Text(model.AppStatus.status)
+      Text(Model.AppStatus.status)
         .foregroundStyle(.red)
         .font(.caption)
         .lineLimit(1)
         .italic()
         .padding()
-        .onTapGesture { model.AppModal.show(.error) }
+        .onTapGesture { Model.AppModal.show(.error) }
     }
     .padding(.top, 32)
     .padding(.horizontal, 56)
-    //    .padding(.bottom, 16)
     .frame(width: 460)
-    .background(theme == .dark ? Color.black.opacity(0.3) : Color.white.opacity(0.5))
   }
 
-  private func recentFolder(_ path: String) -> some View {
+  private var recentsView: some View {
+    List {
+      if Model.AppRecents.isEmpty {
+        Text("No Recent Projects")
+          .font(.body)
+          .foregroundColor(.secondary)
+      } else {
+        headerView
+        ForEach(Model.AppRecents.reversed(), id: \.self) { path in
+          recentFolder(path)
+        }
+      }
+    }
+    .scrollDisabled(true)
+    .listStyle(.sidebar)
+    .frame(width: 280)
+  }
+
+  private var headerView: some View {
+    HStack(spacing: 5) {
+      Text("Recents")
+      Spacer()
+      TextButton("Clear", .link, width: 40, action: Model.clearRecents)
+    }
+  }
+}
+
+private struct recentFolder: View {
+  private var path: String
+  @State var hover: Bool = false
+  @EnvironmentObject var Repo: RepoHandler
+
+  init(_ path: String) { self.path = path }
+
+  var body: some View {
     HStack(spacing: 8) {
       Label("", systemImage: "folder.fill")
         .font(.system(size: 16))
         .frame(width: 32, height: 32)
       VStack(alignment: .leading) {
         Text(path.split(separator: "/").last ?? "??")
-          .foregroundColor(.primary)
           .font(.system(size: 13, weight: .semibold))
-          .lineLimit(1)
         Text(path)
-          .foregroundColor(.primary)
           .font(.system(size: 11))
-          .lineLimit(1)
           .truncationMode(.head)
       }
+      Spacer()
     }
     .help(path)
+    .lineLimit(1)
+    .frame(maxWidth: .infinity)
     .frame(height: 36)
-    .contentShape(Rectangle())
-    .onTapGesture {
-      repo.chooseRepo(URL(fileURLWithPath: path))
-    }
-  }
-
-  private var recentsView: some View {
-    List {
-      if model.AppRecents.isEmpty {
-        Text("No Recent Projects")
-          .font(.body)
-          .foregroundColor(.secondary)
-      } else {
-        ForEach(model.AppRecents.reversed(), id: \.self) { path in
-          recentFolder(path)
-        }
-      }
-    }
-    .listStyle(.sidebar)
-    .frame(width: 280)
+    .onHover { hover in self.hover = hover }
+    .foregroundColor(hover ? .blue : .fg)
+    .onTapGesture { Repo.chooseRepo(URL(fileURLWithPath: path)) }
   }
 }

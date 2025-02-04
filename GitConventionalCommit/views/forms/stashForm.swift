@@ -13,9 +13,8 @@ struct StashForm: View {
       TextField("Enter stash name", text: $value)
         .frame(maxWidth: 300)
       HStack(spacing: 10) {
-        Button("Dismiss", action: { dismiss() }).controlSize(.large)
-        Button("Stash", action: { dismiss() }).controlSize(.large)
-          .buttonStyle(.borderedProminent)
+        TextButton("Cancel", action: { dismiss() })
+        TextButton("Stash", .primary, action: { dismiss() })
       }
     }
     .padding()

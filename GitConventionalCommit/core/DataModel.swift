@@ -13,7 +13,6 @@ class DataModel: ObservableObject {
   @Published var logs: [any RepositoryLogRecord] = []
   @Published var files: Files = Files()
   @Published var loading: Bool = true
-  @Published var importing: Bool = false
   @Published private(set) var AppRecents: [String] = []
   @AppStorage("recents") private var recentsStore: String = ""
 

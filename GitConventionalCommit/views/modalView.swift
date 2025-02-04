@@ -2,20 +2,19 @@ import SwiftUI
 
 struct ModalView: View {
   @Environment(\.dismiss) var dismiss
-  @EnvironmentObject var model: DataModel
+  @EnvironmentObject var Model: DataModel
   @State var hover: Bool = false
 
   var body: some View {
     ZStack(alignment: .topLeading) {
       VStack {
-        switch model.AppModal.mode {
+        switch Model.AppModal.mode {
         case .error: ErrorView()
         case .stash: StashForm()
         case .commit: CommitForm()
         }
       }
-      .padding(.vertical, 25)
-      .padding(.horizontal, 10)
+      .padding(10)
 
       Button(
         "",
@@ -26,9 +25,7 @@ struct ModalView: View {
       .foregroundColor(hover ? .primary : .secondary)
       .onHover { hover in self.hover = hover }
     }
-    .padding(5)
-    .ignoresSafeArea(.all, edges: .all)
-    .presentationDetents([.large, .large])
-    .presentationBackground(.thinMaterial)
+    .padding(.horizontal, 5)
+    .padding(.vertical, 2)
   }
 }

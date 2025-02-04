@@ -2,35 +2,35 @@ import Git
 import SwiftUI
 
 class RepoHandler: ObservableObject {
-  var model: DataModel
+  private var Model: DataModel
 
-  init(_ model: DataModel) { self.model = model }
+  init(_ model: DataModel) { self.Model = model }
 
   func getBranchInfo() -> (String, String) {
-    let name = try? model.repo?.listReferences().currentReference?.name.shortName
-    return (name ?? "Branch", "")
+    let name = try? Model.repo?.listReferences().currentReference?.name.shortName
+    return (name ?? "Branch", "▲1")  // ▼
   }
 
   func getFiles() {
-    model.loading = true
+    Model.loading = true
 
     do {
-      let files = try model.repo!.listStatus(options: .default)
-      model.files = Files()
+      let files = try Model.repo!.listStatus(options: .default)
+      Model.files = Files()
       for file in files {
         if file.hasChangesInIndex {
-          model.files.staged.append(File(file, .staged))
+          Model.files.staged.append(File(file, .staged))
           if file.hasChangesInWorktree {
-            model.files.unstaged.append(File(file, .unstaged))
+            Model.files.unstaged.append(File(file, .unstaged))
           }
         } else if file.hasChangesInWorktree {
-          model.files.unstaged.append(File(file, .unstaged))
+          Model.files.unstaged.append(File(file, .unstaged))
         } else {
-          model.files.untracked.append(File(file, .untracked))
+          Model.files.untracked.append(File(file, .untracked))
         }
       }
     } catch {
-      model.setError(
+      Model.setError(
         title: "Git Status Error",
         body: error.localizedDescription,
         status: "Unable to get file status...",
@@ -38,14 +38,14 @@ class RepoHandler: ObservableObject {
       )
     }
 
-    model.loading = false
+    Model.loading = false
   }
 
   func getLogs() {
     do {
-      model.logs = try model.repo!.listLogRecords().records
+      Model.logs = try Model.repo!.listLogRecords().records
     } catch {
-      model.setError(
+      Model.setError(
         title: "Git Log Error",
         body: error.localizedDescription,
         status: "Error while getting repo logs...",
@@ -55,11 +55,11 @@ class RepoHandler: ObservableObject {
   }
 
   func refresh() {
-    if model.AppMode == .normal {
+    if Model.AppMode == .normal {
       getLogs()
     } else {
-      if let err = model.commit.readCommitFile() {
-        model.setError(
+      if let err = Model.commit.readCommitFile() {
+        Model.setError(
           title: "Error: Reading Commit File",
           body: err.1,
           status: err.0,
@@ -70,28 +70,40 @@ class RepoHandler: ObservableObject {
     getFiles()
   }
 
-  func chooseRepo(_ dir: URL) {
-    model.AppError.clear()
-    model.AppStatus.clear()
-    do {
-      model.repo = try GitRepository(atPath: dir.path)
-      model.addRecents(dir.path)
-      model.AppMode = .normal
-      self.refresh()
-    } catch {
-      model.setError(
-        title: "Repo Error",
-        body: error.localizedDescription,
-        status: "Repo Init Error..."
-      )
+  func openFolder() -> URL? {
+    let panel = NSOpenPanel()
+    panel.title = "Choose Repo folder"
+    panel.canChooseFiles = false
+    panel.canChooseDirectories = true
+
+    let res = panel.runModal()
+    return res == .OK ? panel.url : nil
+  }
+
+  func chooseRepo(_ dir: URL? = nil) {
+    Model.AppError.clear()
+    Model.AppStatus.clear()
+    if let url = dir ?? openFolder() {
+      do {
+        Model.repo = try GitRepository(atPath: url.path)
+        Model.addRecents(url.path)
+        Model.AppMode = .normal
+        self.refresh()
+      } catch {
+        Model.setError(
+          title: "Repo Error",
+          body: error.localizedDescription,
+          status: "Repo Init Error..."
+        )
+      }
     }
   }
 
   func stage(_ paths: [String]) {
     do {
-      try model.repo!.add(files: paths)
+      try Model.repo!.add(files: paths)
     } catch {
-      model.setError(
+      Model.setError(
         title: "Staging Error",
         body: error.localizedDescription,
         status: "Errors while Staging files...",
@@ -102,15 +114,15 @@ class RepoHandler: ObservableObject {
   }
 
   func stageByType(_ type: FileType) {
-    model.AppDialog.show(
+    Model.AppDialog.show(
       message: "All \(type.rawValue) files will be STAGED.",
       actionTitle: "Stage",
       action: {
         let paths: [String]
         switch type {
-        case .staged: paths = self.model.files.staged.map(\.path)
-        case .unstaged: paths = self.model.files.unstaged.map(\.path)
-        case .untracked: paths = self.model.files.untracked.map(\.path)
+        case .staged: paths = self.Model.files.staged.map(\.path)
+        case .unstaged: paths = self.Model.files.unstaged.map(\.path)
+        case .untracked: paths = self.Model.files.untracked.map(\.path)
         }
         self.stage(paths)
       },
@@ -119,14 +131,14 @@ class RepoHandler: ObservableObject {
   }
 
   func stageAll() {
-    model.AppDialog.show(
+    Model.AppDialog.show(
       message: "Everything will be STAGED including untracked.",
       actionTitle: "Stage",
       action: {
         let paths =
-          self.model.files.unstaged.map(
+          self.Model.files.unstaged.map(
             \.path
-          ) + self.model.files.untracked.map(\.path)
+          ) + self.Model.files.untracked.map(\.path)
         self.stage(paths)
       },
       severity: .standard
@@ -135,9 +147,9 @@ class RepoHandler: ObservableObject {
 
   func unStage(_ path: [String]) {
     do {
-      try model.repo!.reset(files: path)
+      try Model.repo!.reset(files: path)
     } catch {
-      model.setError(
+      Model.setError(
         title: "Unstaging Error",
         body: error.localizedDescription,
         status: "Errors while Unstaging files...",
@@ -148,10 +160,10 @@ class RepoHandler: ObservableObject {
   }
 
   func unStageAll() {
-    model.AppDialog.show(
+    Model.AppDialog.show(
       message: "Everything will be UNSTAGED",
       actionTitle: "UnStage",
-      action: { self.unStage(self.model.files.staged.map(\.path)) },
+      action: { self.unStage(self.Model.files.staged.map(\.path)) },
       actionRole: .destructive,
       severity: .critical
     )
@@ -159,9 +171,9 @@ class RepoHandler: ObservableObject {
 
   private func _discard(_ paths: [String]) {
     do {
-      try model.repo!.discardChanges(in: paths)
+      try Model.repo!.discardChanges(in: paths)
     } catch {
-      model.setError(
+      Model.setError(
         title: "Discard Error",
         body: error.localizedDescription,
         status: "Errors while Discarding files...",
@@ -172,7 +184,7 @@ class RepoHandler: ObservableObject {
   }
 
   func discard(_ paths: [String], _ msg: String? = nil) {
-    model.AppDialog.show(
+    Model.AppDialog.show(
       message: msg ?? "All Selected files will be DISCARDED",
       actionTitle: "Discard",
       action: { self._discard(paths) },
@@ -184,28 +196,28 @@ class RepoHandler: ObservableObject {
   func discardByType(_ type: FileType) {
     let paths: [String]
     switch type {
-    case .staged: paths = self.model.files.staged.map(\.path)
-    case .unstaged: paths = self.model.files.unstaged.map(\.path)
-    case .untracked: paths = self.model.files.untracked.map(\.path)
+    case .staged: paths = self.Model.files.staged.map(\.path)
+    case .unstaged: paths = self.Model.files.unstaged.map(\.path)
+    case .untracked: paths = self.Model.files.untracked.map(\.path)
     }
     discard(paths, "\(type.rawValue) files will be DISCARDED")
   }
 
   func discardAll() {
     discard(
-      model.files.staged.map(\.path) + model.files.unstaged.map(\.path),
+      Model.files.staged.map(\.path) + Model.files.unstaged.map(\.path),
       "Everything will be DISCARDED"
     )
   }
 
   func commit() -> Bool {
-    if model.AppMode != .commit {
-      let options = GitCommitOptions(message: model.commit.parseCommit())
+    if Model.AppMode != .commit {
+      let options = GitCommitOptions(message: Model.commit.parseCommit())
       do {
-        try model.repo?.commit(options: options)
+        try Model.repo?.commit(options: options)
         return true
       } catch {
-        self.model.setError(
+        self.Model.setError(
           title: "",
           body: error.localizedDescription,
           status: "",
@@ -215,8 +227,8 @@ class RepoHandler: ObservableObject {
       }
     }
 
-    if let (body, status) = model.commit.writeCommitFile() {
-      model.setError(
+    if let (body, status) = Model.commit.writeCommitFile() {
+      Model.setError(
         title: "Commit Error",
         body: body,
         status: status,
@@ -232,9 +244,9 @@ class RepoHandler: ObservableObject {
 
   func pull() {
     do {
-      try model.repo!.pull(options: .default)
+      try Model.repo!.pull(options: .default)
     } catch {
-      model.setError(
+      Model.setError(
         title: "Repo pull Error",
         body: error.localizedDescription,
         status: "Unable to pull the repo...",
@@ -246,9 +258,9 @@ class RepoHandler: ObservableObject {
 
   func push() {
     do {
-      try model.repo!.push(options: .default)
+      try Model.repo!.push(options: .default)
     } catch {
-      model.setError(
+      Model.setError(
         title: "Push Error",
         body: error.localizedDescription,
         status: "Unable to push the repo...",

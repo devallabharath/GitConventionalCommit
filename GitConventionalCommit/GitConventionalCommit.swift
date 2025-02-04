@@ -20,6 +20,7 @@ struct GitConventionalCommitApp: App {
       .environmentObject(model)
       .environmentObject(RepoHandler(model))
       .windowResizability(.contentSize)
-      .windowToolbarStyle(.expanded)
+      //      .windowToolbarStyle(.unifiedCompact(showsTitle: false))
+      .windowToolbarStyle(.unifiedCompact(showsTitle: false))
   }
 }
