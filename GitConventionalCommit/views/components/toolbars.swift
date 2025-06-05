@@ -64,7 +64,7 @@ struct MainToolBar: ToolbarContent {
     )
     ToolButton("Pull", "arrowshape.down.fill", action: Repo.pull)
     ToolButton("Push", "arrowshape.up.fill", action: Repo.push)
-    ToolButton("Settings", "gearshape.fill", action: {})
+//    ToolButton("Settings", "gearshape.fill", action: {})
     ToolButton(
       "Quit", "rectangle.portrait.and.arrow.right.fill", action: Model.quit
     )
